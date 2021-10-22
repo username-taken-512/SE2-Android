@@ -75,7 +75,7 @@
     </fragment>
     <fragment
         android:id="@+id/connectHouseholdFragment"
-        android:name="com.example.se2_android.Login.ConnectHouseholdFragment"
+        android:name="com.example.se2_android.Household.ConnectHouseholdFragment"
         android:label="fragment_connect_household"
         tools:layout="@layout/fragment_connect_household" >
         <action
@@ -84,6 +84,18 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_connectHouseholdFragment_to_createHouseholdFragment"
+            app:destination="@id/createHouseholdFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createHouseholdFragment"
+        android:name="com.example.se2_android.Household.CreateHouseholdFragment"
+        android:label="fragment_create_household"
+        tools:layout="@layout/fragment_create_household" >
+        <action
+            android:id="@+id/action_createHouseholdFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 
 </navigation>

@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.se2_android.R;
+import com.example.se2_android.Stubs.HouseholdStub;
 import com.example.se2_android.Stubs.LoginStub;
 
 public class LoginFragment extends Fragment {
@@ -34,7 +35,7 @@ public class LoginFragment extends Fragment {
     SwitchCompat rememberSwitch;
 
     LoginStub loginStub;
-
+    HouseholdStub householdStub;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class LoginFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_login, container, false);
 
         loginStub = LoginStub.getInstance();
-
+        householdStub = HouseholdStub.getInstance();
 
         email = view.findViewById(R.id.uName);
         pWord = view.findViewById(R.id.pWord);
@@ -70,7 +71,6 @@ public class LoginFragment extends Fragment {
         });
 
 
-
         forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,49 +90,53 @@ public class LoginFragment extends Fragment {
     }
 
 
-    public void login(){
+    public void login() {
 
 
         boolean check = false;
 
         //Måste hämta värden från databas o kolla här
 
-        if (TextUtils.isEmpty(email.getText().toString().trim())){
+        if (TextUtils.isEmpty(email.getText().toString().trim())) {
             email.setError("Email needs to be inputted");
-            check= true;
+            check = true;
         }
 
-        if (TextUtils.isEmpty(pWord.getText().toString().trim())){
+        if (TextUtils.isEmpty(pWord.getText().toString().trim())) {
             pWord.setError("Password needs to be inputted");
-            check= true;
+            check = true;
         }
 
-        if (check){
+        if (check) {
             return;
         }
 
 
-
-
-        if (email.getText().toString().equals(loginStub.getUsername()) && pWord.getText().toString().equals(loginStub.getPassword())){
-            if (rememberSwitch.isChecked()){
+        if (email.getText().toString().equals(loginStub.getUsername()) && pWord.getText().toString().equals(loginStub.getPassword())) {
+            if (rememberSwitch.isChecked()) {
                 //autologin
             }
             loginStub.setLoggedIn(true);
-            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+
+            if (householdStub.getHouseholdID().isEmpty()) {
+                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_connectHouseholdFragment);
+            } else {
+                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+            }
+
             Toast.makeText(getContext(), "You got logged in as user " + loginStub.getUsername().toUpperCase(), Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(getContext(), "Your accont doesnt exist", Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    public void signUp(){
+    public void signUp() {
         Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_registerFragment);
     }
 
 
-    public void forgetPassword(){
+    public void forgetPassword() {
         //skriva in mail, kolla om den finns, finns den, få lösen på mailen av server?
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
         dialog.setTitle("Forgot password");
@@ -170,20 +174,20 @@ public class LoginFragment extends Fragment {
 
     }
 
-    public void checkBoxChange(boolean isChecked){
-        if (isChecked){
+    public void checkBoxChange(boolean isChecked) {
+        if (isChecked) {
             pWord.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-        }else{
+        } else {
             pWord.setTransformationMethod(PasswordTransformationMethod.getInstance());
         }
 
     }
 
-    public void checkMailAndSendToServer(String mail){
+    public void checkMailAndSendToServer(String mail) {
         //skicka mailen till server som kollar i databas om mailen finns, om den gör de skickar den nytt pw till mailen;
-        if (!mail.matches("^[\\w-_\\.+]+\\@([\\w]+\\.)+[a-z]+[a-z]$")){
+        if (!mail.matches("^[\\w-_\\.+]+\\@([\\w]+\\.)+[a-z]+[a-z]$")) {
             Toast.makeText(getContext(), "No valid mail inputted, No mail sent!", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             Toast.makeText(getContext(), "Mail sent to " + mail, Toast.LENGTH_SHORT).show();
         }
     }
