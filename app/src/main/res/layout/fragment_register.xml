@@ -1,18 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login.RegisterFragment">
+    android:background="@drawable/login_background"
+
+    android:orientation="vertical"
+    android:padding="16dp">
+
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:text="Create account"
+        android:textColor="@color/black"
+        android:textSize="42sp"
+        android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <EditText
+        android:id="@+id/firstNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/edittext_design"
+        android:drawableStart="@drawable/ic_baseline_account_circle_24"
+        android:elevation="16dp"
+        android:hint="@string/Firstname"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/lastNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_design"
+        android:drawableStart="@drawable/ic_baseline_account_circle_24"
+        android:elevation="16dp"
+        android:hint="@string/Lastname"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/emailText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_design"
+        android:drawableStart="@drawable/ic_baseline_email_24"
+        android:elevation="16dp"
+        android:hint="@string/Enter_email"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/passwordText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_design"
+        android:drawableStart="@drawable/ic_baseline_lock_24"
+        android:elevation="16dp"
+        android:hint="@string/Enter_password"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
+
+    <CheckBox
+        android:id="@+id/checkPass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:buttonTint="@color/white"
+        android:text="@string/show_password"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/createButton"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:gravity="center"
+            android:text="@string/create"
+            android:textColor="#1495d7"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already registered?"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="122dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="Go back!"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+</LinearLayout>

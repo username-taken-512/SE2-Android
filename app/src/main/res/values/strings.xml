@@ -3,4 +3,14 @@
     <string name="tab_home_label">Home</string>
     <string name="tab_devices_label">Devices</string>
     <string name="tab_configuration_label">Configuration</string>
+    <string name="Enter_password">Enter Password</string>
+    <string name="show_password">Show Password</string>
+    <string name="Firstname">Fistname</string>
+    <string name="Enter_email">Enter Email</string>
+    <string name="Lastname">Lastname</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_up">Sign up!</string>
+    <string name="not_registered">Not registered?</string>
+    <string name="login">Login</string>
+    <string name="create">Create</string>
 </resources>

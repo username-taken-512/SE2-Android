@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_grey">#cfd8dc</color>
+    <color name="login_blue">#1495d7</color>
+    <color name="login_purple">#715de3</color>
 </resources>

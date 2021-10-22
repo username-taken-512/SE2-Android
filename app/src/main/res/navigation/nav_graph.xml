@@ -67,9 +67,9 @@
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
         <action
-            android:id="@+id/action_registerFragment_to_connectHouseholdFragment"
-            app:destination="@id/connectHouseholdFragment"
-            app:popUpTo="@id/registerFragment"
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true"
             app:launchSingleTop="true" />
     </fragment>
