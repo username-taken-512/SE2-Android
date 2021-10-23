@@ -95,7 +95,10 @@
         tools:layout="@layout/fragment_create_household" >
         <action
             android:id="@+id/action_createHouseholdFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"/>
     </fragment>
 
 </navigation>
