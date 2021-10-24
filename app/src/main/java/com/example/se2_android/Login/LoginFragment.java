@@ -98,12 +98,12 @@ public class LoginFragment extends Fragment {
         //Måste hämta värden från databas o kolla här
 
         if (TextUtils.isEmpty(email.getText().toString().trim())) {
-            email.setError("Email needs to be inputted");
+            email.setError("Please input a valid email");
             check = true;
         }
 
         if (TextUtils.isEmpty(pWord.getText().toString().trim())) {
-            pWord.setError("Password needs to be inputted");
+            pWord.setError("Please input a password");
             check = true;
         }
 
@@ -126,7 +126,7 @@ public class LoginFragment extends Fragment {
 
             Toast.makeText(getContext(), "You got logged in as user " + loginStub.getUsername().toUpperCase(), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(), "Your accont doesnt exist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Your account doesn't exist", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,7 +186,7 @@ public class LoginFragment extends Fragment {
     public void checkMailAndSendToServer(String mail) {
         //skicka mailen till server som kollar i databas om mailen finns, om den gör de skickar den nytt pw till mailen;
         if (!mail.matches("^[\\w-_\\.+]+\\@([\\w]+\\.)+[a-z]+[a-z]$")) {
-            Toast.makeText(getContext(), "No valid mail inputted, No mail sent!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "A valid email is required, no email sent!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Mail sent to " + mail, Toast.LENGTH_SHORT).show();
         }

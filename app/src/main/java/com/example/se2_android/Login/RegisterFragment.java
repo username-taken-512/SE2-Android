@@ -103,7 +103,7 @@ public class RegisterFragment extends Fragment {
 
 
         if (TextUtils.isEmpty(emailString)){
-            email.setError("You need to enter a email");
+            email.setError("You need to enter an email");
             check = true;
         }else if (!emailString.matches("^[\\w-_\\.+]+\\@([\\w]+\\.)+[a-z]+[a-z]$")){
             email.setError("This is not a valid email");
