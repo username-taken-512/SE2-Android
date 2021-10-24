@@ -93,7 +93,7 @@
             android:backgroundTint="@color/white"
             android:gravity="center"
             android:text="@string/create"
-            android:textColor="#1495d7"
+            android:textColor="@color/login_blue"
             android:textStyle="bold" />
     </LinearLayout>
 
