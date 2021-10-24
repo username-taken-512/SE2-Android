@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -119,6 +120,10 @@ public class RegisterFragment extends Fragment {
         if (check){
             return;
         }
+
+
+        Toast.makeText(getContext(), "Account has been created", Toast.LENGTH_SHORT).show();
+        Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment);
 
 
 
