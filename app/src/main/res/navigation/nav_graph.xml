@@ -60,6 +60,9 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/configFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_configFragment_to_editDeviceFragment"
+            app:destination="@id/editDeviceFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -99,6 +102,30 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/editDeviceFragment"
+        android:name="com.example.se2_android.DevicesTab.EditDeviceFragment"
+        android:label="fragment_edit_device"
+        tools:layout="@layout/fragment_edit_device">
+
+        <action
+            android:id="@+id/action_editDeviceFragment_to_configFragment"
+            app:destination="@id/configFragment" />
+        <action
+            android:id="@+id/action_editDeviceFragment_to_changeDeviceInfoFragment"
+            app:destination="@id/changeDeviceInfoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/changeDeviceInfoFragment"
+        android:name="com.example.se2_android.DevicesTab.ChangeDeviceInfoFragment"
+        android:label="fragment_change_device_info"
+        tools:layout="@layout/fragment_change_device_info">
+        <action
+            android:id="@+id/action_changeDeviceInfoFragment_to_editDeviceFragment"
+            app:destination="@id/editDeviceFragment" />
     </fragment>
 
 </navigation>

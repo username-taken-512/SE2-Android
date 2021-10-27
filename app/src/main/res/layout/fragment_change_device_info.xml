@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DevicesTab.ChangeDeviceInfoFragment"
+    android:background="@drawable/login_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:text="Change Info"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="38sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="28dp"
+        android:layout_height="wrap_content"
+        android:text="Device ID"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
+
+    <EditText
+        android:id="@+id/deviceID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/edittext_design"
+        android:elevation="16dp"
+        android:imeOptions="actionNext"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:textSize="22sp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
+        android:text="Device Name"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
+
+    <EditText
+        android:id="@+id/deviceName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/edittext_design"
+        android:elevation="16dp"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:textSize="22sp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
+        android:text="Device Type"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
+
+    <AutoCompleteTextView
+        android:id="@+id/deviceType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/edittext_design"
+        android:elevation="16dp"
+        android:imeOptions="actionDone"
+        android:completionThreshold="1"
+        android:minHeight="48dp"
+        android:textSize="22sp"
+        android:inputType="none"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp">
+
+        <Button
+            android:id="@+id/deleteDevice"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_btn"
+            android:text="Delete Device"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/updateButton"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/custom_btn"
+            android:text="Update"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
