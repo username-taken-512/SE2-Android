@@ -1,31 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DevicesTab.ChangeDeviceInfoFragment"
     android:background="@drawable/login_background"
-    android:gravity="center"
     android:orientation="vertical"
-    android:padding="28dp">
+    android:padding="16dp"
+    tools:context=".DevicesTab.ChangeDeviceInfoFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/backButtonEditList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_subdirectory_arrow_left_48"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+
         android:layout_marginBottom="16dp"
+        android:gravity="center"
         android:text="Change Info"
         android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textSize="38sp" />
+        android:textSize="38sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_marginTop="28dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:text="Device ID"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/deviceID"
@@ -37,16 +56,15 @@
         android:imeOptions="actionNext"
         android:inputType="number"
         android:minHeight="48dp"
-        android:textSize="22sp"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:textSize="22sp" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Device Name"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/deviceName"
@@ -58,16 +76,15 @@
         android:imeOptions="actionNext"
         android:inputType="text"
         android:minHeight="48dp"
-        android:textSize="22sp"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:textSize="22sp" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Device Type"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textStyle="bold" />
 
     <AutoCompleteTextView
         android:id="@+id/deviceType"
@@ -75,12 +92,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:background="@drawable/edittext_design"
+        android:completionThreshold="1"
         android:elevation="16dp"
         android:imeOptions="actionDone"
-        android:completionThreshold="1"
+        android:inputType="none"
         android:minHeight="48dp"
-        android:textSize="22sp"
-        android:inputType="none"/>
+        android:textSize="22sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -99,12 +116,13 @@
             android:id="@+id/updateButton"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="50dp"
             android:background="@drawable/custom_btn"
             android:text="Update"
             android:textStyle="bold" />
 
     </LinearLayout>
+
 
 
 </LinearLayout>

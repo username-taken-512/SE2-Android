@@ -3,6 +3,7 @@ package com.example.se2_android.DevicesTab;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.se2_android.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ public class ChangeDeviceInfoFragment extends Fragment {
     View view;
     EditText deviceID, deviceName;
     AutoCompleteTextView deviceType;
+    FloatingActionButton backButton;
     Button delete, update;
     int devID;
     String devType, devName;
@@ -35,7 +38,7 @@ public class ChangeDeviceInfoFragment extends Fragment {
 
         deviceID = view.findViewById(R.id.deviceID);
         deviceName = view.findViewById(R.id.deviceName);
-
+        backButton = view.findViewById(R.id.backButtonEditList);
         deviceType = view.findViewById(R.id.deviceType);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, DEVICETYPES);
         deviceType.setAdapter(adapter);
@@ -52,6 +55,13 @@ public class ChangeDeviceInfoFragment extends Fragment {
                 deviceType.showDropDown();
             }
         }) ;
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.action_changeDeviceInfoFragment_to_editDeviceFragment);
+            }
+        });
 
         update.setOnClickListener(new View.OnClickListener() {
             @Override
