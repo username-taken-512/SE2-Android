@@ -35,9 +35,9 @@ public class EditDeviceFragment extends Fragment {
         recyclerView = view.findViewById(R.id.editDeviceView);
         floatingActionButton =view.findViewById(R.id.backButtonConfig);
 
-        deviceList.add(new Device(0, true, "lamp", "Kitchen lamp"));
-        deviceList.add(new Device(1, true, "lamp", "Bathroom lamp"));
-        deviceList.add(new Device(2, false, "lamp", "Bedroom lamp"));
+        deviceList.add(new Device(0, "kitchen lamp", "lamp", 1, 0));
+        deviceList.add(new Device(1, "bathroom lamp", "lamp", 0, 0));
+        deviceList.add(new Device(2, "bedroom lamp", "lamp", 1, 0));
         EditDeviceAdapter editDeviceAdapter = new EditDeviceAdapter(deviceList);
         recyclerView.setAdapter(editDeviceAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

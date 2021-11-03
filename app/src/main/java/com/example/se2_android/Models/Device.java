@@ -2,18 +2,20 @@ package com.example.se2_android.Models;
 
 public class Device {
     int deviceId;
-    boolean on;
-    String deviceType;
-    String deviceName;
+    String name;
+    String type;
+    int value;
+    int householdId;
 
     public Device() {
     }
 
-    public Device(int deviceId, boolean on, String deviceType, String deviceName) {
+    public Device(int deviceId, String name, String type, int value, int householdId) {
         this.deviceId = deviceId;
-        this.on = on;
-        this.deviceType = deviceType;
-        this.deviceName = deviceName;
+        this.name = name;
+        this.type = type;
+        this.value = value;
+        this.householdId = householdId;
     }
 
     public int getDeviceId() {
@@ -24,27 +26,35 @@ public class Device {
         this.deviceId = deviceId;
     }
 
-    public boolean isOn() {
-        return on;
+    public String getName() {
+        return name;
     }
 
-    public void setOn(boolean on) {
-        this.on = on;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDeviceType() {
-        return deviceType;
+    public String getType() {
+        return type;
     }
 
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getDeviceName() {
-        return deviceName;
+    public int getValue() {
+        return value;
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int getHouseholdId() {
+        return householdId;
+    }
+
+    public void setHouseholdId(int householdId) {
+        this.householdId = householdId;
     }
 }

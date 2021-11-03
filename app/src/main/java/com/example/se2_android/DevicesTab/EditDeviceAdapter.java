@@ -1,16 +1,15 @@
 package com.example.se2_android.DevicesTab;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
@@ -39,14 +38,14 @@ public class EditDeviceAdapter extends RecyclerView.Adapter<EditDeviceAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        holder.deviceName.setText(devices.get(position).getDeviceName());
+        holder.deviceName.setText(devices.get(position).getName());
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString("devName", devices.get(position).getDeviceName());
-                bundle.putString("devType" , devices.get(position).getDeviceType());
+                bundle.putString("devName", devices.get(position).getName());
+                bundle.putString("devType" , devices.get(position).getType());
                 bundle.putInt("devID", devices.get(position).getDeviceId());
                 Navigation.findNavController(v).navigate(R.id.action_editDeviceFragment_to_changeDeviceInfoFragment, bundle);
 
