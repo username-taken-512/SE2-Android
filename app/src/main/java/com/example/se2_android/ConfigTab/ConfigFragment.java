@@ -28,6 +28,7 @@ public class ConfigFragment extends Fragment {
         editDevicesImage = view.findViewById(R.id.editDevice);
         notificationImage = view.findViewById(R.id.notification);
         logoutImage = view.findViewById(R.id.logoutConfig);
+        LoginStub loginStub = LoginStub.getInstance();
 
         changeHouseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +41,6 @@ public class ConfigFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(view).navigate(R.id.action_configFragment_to_editDeviceFragment);
-                //Ny scen med alla devices, recyclerview där du får upp alla & edita en specific
             }
         });
 
@@ -55,6 +55,7 @@ public class ConfigFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Logga ut user och navigera till LOGIN
+                loginStub.setLoggedIn(false);
                 Navigation.findNavController(view).navigate(R.id.action_configFragment_to_loginFragment);
             }
         });

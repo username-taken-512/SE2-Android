@@ -56,6 +56,13 @@ public class ChangeDeviceInfoFragment extends Fragment {
             }
         }) ;
 
+        deviceType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                deviceType.showDropDown();
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

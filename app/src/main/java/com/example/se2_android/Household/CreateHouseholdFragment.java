@@ -19,7 +19,7 @@ public class CreateHouseholdFragment extends Fragment {
     View view;
 
     Button createHouseButton;
-    EditText householdName, householdID;
+    EditText householdName;
 
     HouseholdStub householdStub;
 
@@ -32,15 +32,14 @@ public class CreateHouseholdFragment extends Fragment {
 
         createHouseButton = view.findViewById(R.id.createHouse2Button);
         householdName = view.findViewById(R.id.householdName);
-        householdID = view.findViewById(R.id.householdID);
+
 
         createHouseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String name = householdName.getText().toString();
-                String id = householdID.getText().toString();
                 householdStub.setHouseholdName(name);
-                householdStub.setHouseholdID(id);
+                householdStub.setHouseholdID("10");
 
                 Navigation.findNavController(view).navigate(R.id.action_createHouseholdFragment_to_homeFragment);
             }
