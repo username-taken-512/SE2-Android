@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,15 @@ import androidx.navigation.Navigation;
 
 import com.example.se2_android.R;
 import com.example.se2_android.Stubs.HouseholdStub;
+import com.example.se2_android.Stubs.LoginStub;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ConnectHouseholdFragment extends Fragment {
 
     View view;
-    Button createHouseButton, joinHouseButton;
+    Button joinHouseButton;
+    LoginStub loginStub = LoginStub.getInstance();
+    FloatingActionButton backButton;
 
     HouseholdStub householdStub;
 
@@ -31,15 +36,17 @@ public class ConnectHouseholdFragment extends Fragment {
 
         householdStub = HouseholdStub.getInstance();
 
-        createHouseButton = view.findViewById(R.id.createHouseButton);
         joinHouseButton = view.findViewById(R.id.joinHouseButton);
+        backButton = view.findViewById(R.id.backButtonNewHousehold);
 
-        createHouseButton.setOnClickListener(new View.OnClickListener() {
+
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(view).navigate(R.id.action_connectHouseholdFragment_to_createHouseholdFragment);
+                Navigation.findNavController(view).navigate(R.id.action_connectHouseholdFragment_to_configFragment);
             }
         });
+
 
         joinHouseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +96,9 @@ public class ConnectHouseholdFragment extends Fragment {
         } else {
             householdStub.setHouseholdID(id);
             householdStub.setHouseholdName("Id set to - " + id);
-            Toast.makeText(getContext(), "Joined Household with id - " + householdStub.getHouseholdID(), Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigate(R.id.action_connectHouseholdFragment_to_homeFragment);
+            loginStub.setLoggedIn(false);
+            Toast.makeText(getContext(), "Login to get the devices in house - " + householdStub.getHouseholdID(), Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(view).navigate(R.id.action_connectHouseholdFragment_to_loginFragment);
         }
 
     }

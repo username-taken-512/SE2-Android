@@ -1,5 +1,7 @@
 package com.example.se2_android.ConfigTab;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,29 @@ public class ConfigFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Joina nytt household
+
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+
+                dialog.setTitle("Join new Household.");
+                dialog.setMessage("Are you sure you want to join a new Household?");
+
+                dialog.setPositiveButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Navigera till join fragment klassen.
+                        Navigation.findNavController(view).navigate(R.id.action_configFragment_to_connectHouseholdFragment);
+                    }
+                });
+
+                dialog.show();
+
             }
         });
 

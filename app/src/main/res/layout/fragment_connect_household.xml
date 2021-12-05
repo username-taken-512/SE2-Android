@@ -7,47 +7,30 @@
     android:background="@drawable/login_background"
     tools:context=".Household.ConnectHouseholdFragment">
 
-    <TextView
-        android:id="@+id/connectToHouseHoldText"
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/backButtonNewHousehold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        android:gravity="center"
-        android:text="@string/connect_to_household"
-        android:textColor="@color/white"
-        android:textSize="30sp"
-        android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_baseline_subdirectory_arrow_left_48"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/orTextView"
+        android:id="@+id/connectToHouseHoldText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/or"
-        android:textSize="18sp"
+        android:layout_marginTop="160dp"
+        android:gravity="center"
+        android:text="@string/connect_to_new_household"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/createHouseButton"
+        android:textSize="30sp"
+        android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/joinHouseButton" />
-
-    <Button
-        android:id="@+id/createHouseButton"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_btn"
-        android:text="@string/create_household"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/joinHouseButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connectToHouseHoldText"
-        app:layout_constraintVertical_bias="0.723" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/joinHouseButton"
@@ -61,6 +44,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connectToHouseHoldText"
+        app:layout_constraintVertical_bias="0.644" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

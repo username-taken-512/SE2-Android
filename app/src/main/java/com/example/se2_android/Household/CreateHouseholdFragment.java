@@ -41,7 +41,7 @@ public class CreateHouseholdFragment extends Fragment {
                 householdStub.setHouseholdName(name);
                 householdStub.setHouseholdID("10");
 
-                Navigation.findNavController(view).navigate(R.id.action_createHouseholdFragment_to_homeFragment);
+                //Navigation.findNavController(view).navigate(R.id.action_createHouseholdFragment_to_homeFragment);
             }
         });
 

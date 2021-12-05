@@ -117,12 +117,8 @@ public class LoginFragment extends Fragment {
                 //autologin
             }
             loginStub.setLoggedIn(true);
+            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
 
-            if (householdStub.getHouseholdID().isEmpty()) {
-                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_connectHouseholdFragment);
-            } else {
-                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
-            }
 
             Toast.makeText(getContext(), "You got logged in as user " + loginStub.getUsername().toUpperCase(), Toast.LENGTH_SHORT).show();
         } else {
