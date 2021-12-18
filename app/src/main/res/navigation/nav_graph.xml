@@ -96,7 +96,7 @@
 
     <fragment
         android:id="@+id/editDeviceFragment"
-        android:name="com.example.se2_android.DevicesTab.EditDeviceFragment"
+        android:name="com.example.se2_android.ConfigTab.EditDeviceFragment"
         android:label="fragment_edit_device"
         tools:layout="@layout/fragment_edit_device">
 
@@ -106,16 +106,31 @@
         <action
             android:id="@+id/action_editDeviceFragment_to_changeDeviceInfoFragment"
             app:destination="@id/changeDeviceInfoFragment" />
+        <action
+            android:id="@+id/action_editDeviceFragment_to_addDeviceFragment"
+            app:destination="@id/addDeviceFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/changeDeviceInfoFragment"
-        android:name="com.example.se2_android.DevicesTab.ChangeDeviceInfoFragment"
+        android:name="com.example.se2_android.ConfigTab.ChangeDeviceInfoFragment"
         android:label="fragment_change_device_info"
         tools:layout="@layout/fragment_change_device_info">
         <action
             android:id="@+id/action_changeDeviceInfoFragment_to_editDeviceFragment"
-            app:destination="@id/editDeviceFragment" />
+            app:destination="@id/editDeviceFragment"
+            app:popUpTo="@id/editDeviceFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addDeviceFragment"
+        android:name="com.example.se2_android.ConfigTab.AddDeviceFragment"
+        android:label="AddDeviceFragment" >
+        <action
+            android:id="@+id/action_addDeviceFragment_to_editDeviceFragment"
+            app:destination="@id/editDeviceFragment"
+            app:popUpTo="@id/editDeviceFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

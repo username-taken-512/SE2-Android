@@ -1,6 +1,7 @@
 package com.example.se2_android.DevicesTab;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se2_android.Models.Device;
 import com.example.se2_android.R;
-import com.example.se2_android.Stubs.LoginStub;
 import com.example.se2_android.Utils.WebsocketViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -68,7 +68,7 @@ public class DevicesFragment extends Fragment {
         setupRecyclerView();
 
         //TODO: Future use = add device. Currently a refresh button for testing
-        FloatingActionButton fab = view.findViewById(R.id.floatingActionButton);
+        FloatingActionButton fab = view.findViewById(R.id.addButtonConfig);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,10 +86,12 @@ public class DevicesFragment extends Fragment {
 
         //TODO:
         //If not logged in, go to login, else skip navigation
-        LoginStub loginStub = LoginStub.getInstance();
-        if (!loginStub.isLoggedIn()) {
-            Navigation.findNavController(view).navigate(R.id.action_devicesFragment_to_loginFragment);
-        }
+//        LoginStub loginStub = LoginStub.getInstance();
+//        if (!loginStub.isLoggedIn()) {
+//            Navigation.findNavController(view).navigate(R.id.action_devicesFragment_to_loginFragment);
+//        }
+
+        begin();
     }
 
     private void setupRecyclerView() {
@@ -110,5 +112,17 @@ public class DevicesFragment extends Fragment {
                 mAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void begin() {
+        //If sharedPref == null, go to login
+        //Get token
+        SharedPreferences sharedPref = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String token = sharedPref.getString("token", "");
+
+        //If no saved token, go to login
+        if (token.equals("")) {
+            Navigation.findNavController(view).navigate(R.id.action_devicesFragment_to_loginFragment);
+        }
     }
 }

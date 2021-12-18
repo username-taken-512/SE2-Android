@@ -1,6 +1,7 @@
 package com.example.se2_android;
 
 import org.jetbrains.annotations.NotNull;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -8,11 +9,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.se2_android.Models.Device;
+import com.example.se2_android.Utils.Constant;
 import com.example.se2_android.Utils.WebsocketViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
@@ -36,14 +40,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int OPCODE_CHANGE_DEVICE_STATUS = 20;
     private static final int OPCODE_CHANGE_DEVICE_HOUSEHOLD = 21;
     private static final int OPCODE_CHANGE_DEVICE_NOTOK = 40;
+    private static final int OPCODE_INVALID_TOKEN = 49;
 
     private static final String TAG = "MainActivity";
 
     private static WebSocket webSocket;
     //Mats IP: 85.197.159.131, Mats websocket port: 1337
-    private static String SERVER_PATH = "ws://85.197.159.131:1337/house?token=123";
+    private static String SERVER_PATH = "ws://192.168.0.100:7071/house?token=";
+    //    private static String SERVER_PATH = "ws://85.197.159.131:1337/house?token=123";
+//    private static String SERVER_PATH = "ws://194.47.44.4:7071/house?token=123";
     private static Gson gson;
     private WebsocketViewModel websocketViewModel;
+    private SharedPreferences sharedPref;
 
     NavController navController;
 
@@ -51,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPref = this.getSharedPreferences("settings", Context.MODE_PRIVATE);
 
         //Set up bottom Nav & Nav controller
         BottomNavigationView bottomNavigationView;
@@ -64,15 +73,15 @@ public class MainActivity extends AppCompatActivity {
 
         websocketViewModel = new ViewModelProvider(this).get(WebsocketViewModel.class);
         gson = new Gson();
-        connectWebsocket();
+//        connectWebsocket("token=123");
     }
 
     // --- Websocket ---
-    private void connectWebsocket() {
+    public void connectWebsocket(String token) {
         Log.i(TAG, "connectWebSocket method start");
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder().url(SERVER_PATH).build();
+        Request request = new Request.Builder().url(SERVER_PATH + token).build();
 
         if (websocketViewModel.getWebsocket() == null) {
             Log.i(TAG, "connectWebSocket viewmodel null");
@@ -87,12 +96,20 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "connectWebSocket method end");
     }
 
+    public void disconnectWebsocket() {
+        if ((webSocket = websocketViewModel.getWebsocket()) != null) {
+            webSocket.close(1000, "logout");
+            websocketViewModel.setWebsocket(null);
+            Log.i(TAG, "disconnectWebsocket");
+        }
+    }
+
     private class SocketListener extends WebSocketListener {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             super.onOpen(webSocket, response);
 
-            Log.i(TAG, "Connection opened");
+            Log.i(TAG, "Connection opened ");
             runOnUiThread(() -> {
                 websocketViewModel.setWebsocketConnected(true);
             });
@@ -126,6 +143,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Could not connect to device", Toast.LENGTH_SHORT).show();
                         statusDevice(jsonObject);
                         break;
+                    case OPCODE_INVALID_TOKEN:
+                        runOnUiThread(() -> {
+                            clearToken();
+                            websocketViewModel.setConnectionStatus(3);
+                        });
+                        break;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -136,34 +159,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
             super.onClosed(webSocket, code, reason);
-            System.out.println(webSocket.request());
-            System.out.println("closed " + code + "|" + reason);
+            Log.i(TAG, "onClosed" + webSocket.request());
+            Log.i(TAG, "onClosed " + code + "|" + reason);
 
             runOnUiThread(() -> {
                 websocketViewModel.setWebsocketConnected(false);
             });
             Log.i(TAG, "onClosed - Trying to reconnect... " + websocketViewModel.isWebsocketConnected());
-            connectWebsocket();
+            //TODO: Reconnect feature - connectWebsocket();
         }
 
         @Override
         public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
             super.onClosing(webSocket, code, reason);
-            System.out.println(webSocket.request());
-            System.out.println("closing " + code + "|" + reason);
+            Log.i(TAG, "onClosing " + webSocket.request());
+            Log.i(TAG, "onClosing " + code + "|" + reason);
         }
 
         @Override
         public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {
             super.onFailure(webSocket, t, response);
 
-            System.out.println("onFailure " + t);
+            System.out.println("onFailure " + t.getMessage());
 
             runOnUiThread(() -> {
                 websocketViewModel.setWebsocketConnected(false);
             });
-            Log.i(TAG, "onFailure - Trying to reconnect... " + websocketViewModel.isWebsocketConnected());
-            connectWebsocket();
+//            Log.i(TAG, "onFailure - Trying to reconnect... " + websocketViewModel.isWebsocketConnected());
+            //TODO: Reconnect feature - connectWebsocket();
         }
     }
 
@@ -176,10 +199,11 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < jsonArray.length(); i++) {
             Log.i(TAG, "onMessage for loop: " + jsonArray.getString(i));
+            Device device = gson.fromJson(jsonArray.getString(i), Device.class);
 
             websocketViewModel.addToDeviceList(gson.fromJson(jsonArray.getString(i), Device.class));
             Log.i(TAG, "onMessage for-loop list size: " + websocketViewModel.getDeviceList().size());
-
+            websocketViewModel.setHouseholdId(device.getHouseholdId());
         }
         Log.i(TAG, "onMessage for-loop left loop");
         runOnUiThread(() -> {
@@ -193,13 +217,24 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Device> currentList = websocketViewModel.getDeviceList();
 
+        boolean existingDevice = false;
         for (Device d : currentList) {
             Log.i(TAG, "onMessage SEND ONE DEVICE FOR");
             if (device.getDeviceId() == d.getDeviceId()) {
+                if (d.getHouseholdId() != device.getHouseholdId()) {
+                    currentList.remove(d);
+                }
                 Log.i(TAG, "onMessage SEND ONE DEVICE IF");
                 d.setValue(device.getValue());
+                d.setType(device.getType());
+                d.setName(device.getName());
+                existingDevice = true;
                 break;
             }
+        }
+
+        if (!existingDevice) {
+            currentList.add(device);
         }
         runOnUiThread(() -> {
             Log.i(TAG, "onMessage VM set deviceList");
@@ -212,15 +247,21 @@ public class MainActivity extends AppCompatActivity {
     // --- Websocket outgoing message methods ---
 
     //Called from DevicesFragment
-    public void changeDevice(Device device) {
+    public void changeDevice(Device device, int opcode) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("opcode", OPCODE_CHANGE_DEVICE_STATUS);
+            jsonObject.put("opcode", opcode);
             jsonObject.put("data", gson.toJson(device));
             System.out.println("Sending: " + jsonObject);
             webSocket.send(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void clearToken() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("token", "");
+        editor.commit();
     }
 }

@@ -7,7 +7,7 @@
 
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".RegisterFragment">
+    tools:context=".Login.RegisterFragment">
 
 
     <TextView
@@ -90,6 +90,7 @@
         android:background="@drawable/edittext_design"
         android:completionThreshold="1"
         android:elevation="16dp"
+        android:singleLine="true"
         android:inputType="none"
         android:minHeight="48dp"
         android:textSize="22sp"

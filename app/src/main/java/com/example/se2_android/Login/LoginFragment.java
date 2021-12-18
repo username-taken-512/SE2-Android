@@ -5,14 +5,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,28 +27,31 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.se2_android.Models.User;
 import com.example.se2_android.R;
-import com.example.se2_android.Stubs.HouseholdStub;
-import com.example.se2_android.Stubs.LoginStub;
+
+import com.example.se2_android.Utils.WebsocketAuth;
+import com.example.se2_android.Utils.WebsocketViewModel;
 
 public class LoginFragment extends Fragment {
+    private static final String TAG = "LoginFragment";
     View view;
+    private static WebsocketViewModel websocketViewModel;
+    private WebsocketAuth websocketAuth;
 
     EditText email, pWord;
     Button loginButton, forgotPasswordButton, signUpButton;
     CheckBox checkBox;
     SwitchCompat rememberSwitch;
+    private Observer<Integer> observer;
 
-    LoginStub loginStub;
-    HouseholdStub householdStub;
+    User user;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_login, container, false);
-
-        loginStub = LoginStub.getInstance();
-        householdStub = HouseholdStub.getInstance();
+        websocketViewModel = new ViewModelProvider(getActivity()).get(WebsocketViewModel.class);
 
         email = view.findViewById(R.id.uName);
         pWord = view.findViewById(R.id.pWord);
@@ -66,6 +74,10 @@ public class LoginFragment extends Fragment {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: Test
+//                websocketViewModel.getConnectionStatusAuth().removeObserver(observer);
+//                Log.i(TAG, "signup, removing Login observer");
+
                 signUp();
             }
         });
@@ -84,15 +96,50 @@ public class LoginFragment extends Fragment {
                 checkBoxChange(isChecked);
             }
         });
-
-
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //Login, to know when to navigate
+        observer = new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+                Log.i(TAG, "Livedata onChanged: " + integer);
+                if (integer == 1) {         // Connection opened
+                    Log.i(TAG, "Livedata onChanged: inside 1");
+                    if (websocketAuth != null) {
+                        Log.i(TAG, "Livedata onChanged: inside 1, before call");
+                        websocketAuth.login(user);
+                    }
+                } else if (integer == 2) {  // Token returned, time to login
+                    websocketViewModel.setWebsocket(null);
+                    websocketViewModel.setConnectionStatusAuth(0);
+                    websocketViewModel.setConnectionStatus(0);
+                    try {
+                        Log.i(TAG, "Livedata onChanged, Try to navigate");
+                        websocketViewModel.getConnectionStatusAuth().removeObserver(this);
+                        Toast.makeText(getContext(), "You got logged in as user " + email.getText().toString(), Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+                    } catch (Exception e) {
+                        Log.i(TAG, "Livedata onChanged, cought exception:\n" + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        websocketViewModel.getConnectionStatusAuth().observe(getActivity(), observer);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        websocketViewModel.getConnectionStatusAuth().removeObservers(getActivity());
+        websocketViewModel.getConnectionStatusAuth().removeObserver(observer);
+    }
 
     public void login() {
-
-
         boolean check = false;
 
         //Måste hämta värden från databas o kolla här
@@ -112,18 +159,30 @@ public class LoginFragment extends Fragment {
         }
 
 
-        if (email.getText().toString().equals(loginStub.getUsername()) && pWord.getText().toString().equals(loginStub.getPassword())) {
-            if (rememberSwitch.isChecked()) {
-                //autologin
-            }
-            loginStub.setLoggedIn(true);
-            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
-
-
-            Toast.makeText(getContext(), "You got logged in as user " + loginStub.getUsername().toUpperCase(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Your account doesn't exist", Toast.LENGTH_SHORT).show();
+        if (rememberSwitch.isChecked()) {
+            //autologin
         }
+
+        //Create user object
+        user = new User();
+        user.setUsername(email.getText().toString().trim());
+        user.setPassword(pWord.getText().toString());
+
+        //Connect ws houseauth
+        websocketAuth = new WebsocketAuth(getContext(), view, getActivity());
+
+
+        //Store token
+        //Navigate to Home
+
+        //TODO: Dont need to check household anymore
+//            if (householdStub.getHouseholdID().isEmpty()) {
+//                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_connectHouseholdFragment);
+//            } else {
+//                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+//            }
+
+
     }
 
 

@@ -1,10 +1,12 @@
-package com.example.se2_android.DevicesTab;
+package com.example.se2_android.ConfigTab;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +14,19 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.se2_android.MainActivity;
+import com.example.se2_android.Models.Device;
 import com.example.se2_android.R;
+import com.example.se2_android.Utils.Constant;
+import com.example.se2_android.Utils.WebsocketViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-
 public class ChangeDeviceInfoFragment extends Fragment {
+    private static WebsocketViewModel websocketViewModel;
     View view;
-    EditText deviceID, deviceName;
+    EditText deviceId, deviceName;
     AutoCompleteTextView deviceType;
     FloatingActionButton backButton;
     Button delete, update;
@@ -28,15 +34,16 @@ public class ChangeDeviceInfoFragment extends Fragment {
     String devType, devName;
 
     private final static String[] DEVICETYPES = new String[]{
-            "Lamp", "Alarm",
+            "lamp", "element", "timer", "alarm"
     };
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_change_device_info, container, false);
+        websocketViewModel = new ViewModelProvider(getActivity()).get(WebsocketViewModel.class);
 
-        deviceID = view.findViewById(R.id.deviceID);
+        deviceId = view.findViewById(R.id.deviceID);
         deviceName = view.findViewById(R.id.deviceName);
         backButton = view.findViewById(R.id.backButtonEditList);
         deviceType = view.findViewById(R.id.deviceType);
@@ -44,7 +51,7 @@ public class ChangeDeviceInfoFragment extends Fragment {
         deviceType.setAdapter(adapter);
 
         delete = view.findViewById(R.id.deleteDevice);
-        update = view.findViewById(R.id.updateButton);
+        update = view.findViewById(R.id.addButton);
 
         getData();
         setData();
@@ -73,25 +80,56 @@ public class ChangeDeviceInfoFragment extends Fragment {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Uppdatera i databas med hjälp av server.
-                // Kolla vilka edit fields som inte är tomma, tomma edit ska ha samma värde som innan.
+                sendDevice(false);
             }
         });
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: tabort i databas med hjälp av server.
+                sendDevice(true);
             }
         });
-
-
-
-
-
         return view;
     }
 
+    private void sendDevice(boolean delete) {
+        boolean check = false;
+        if (TextUtils.isEmpty(deviceName.getText().toString().trim())) {
+            deviceName.setError("Please input a device name");
+            check = true;
+        }
+
+        if (TextUtils.isEmpty(deviceType.getText().toString().trim())) {
+            deviceType.setError("Please select a device type");
+            check = true;
+        }
+
+        if (check) {
+            return;
+        }
+
+        // Send device object
+        Device device = new Device();
+        device.setDeviceId(devID);
+        if (delete) {
+            device.setName(devName);
+            device.setType(devType);
+            device.setHouseholdId(0);
+        } else {
+            device.setName(deviceName.getText().toString().trim());
+            if (TextUtils.isEmpty(deviceType.getText().toString().trim())) {
+                device.setType(devType);
+            } else {
+                device.setType(deviceType.getText().toString().trim());
+            }
+            device.setHouseholdId(websocketViewModel.getHouseholdId());
+        }
+
+        ((MainActivity) getActivity()).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_INFO);
+        Toast.makeText(getActivity(), "Sent message to server", Toast.LENGTH_SHORT).show();
+        Navigation.findNavController(view).navigate(R.id.action_changeDeviceInfoFragment_to_editDeviceFragment);
+    }
 
     public void getData(){
         if (getArguments() != null){
@@ -103,8 +141,10 @@ public class ChangeDeviceInfoFragment extends Fragment {
     }
 
     public void setData(){
-        deviceID.setHint(String.valueOf(devID));
+        deviceId.setHint(String.valueOf(devID));
         deviceName.setHint(devName);
+        deviceName.setText(devName);
         deviceType.setHint(devType);
+        deviceType.setText(devType);
     }
 }

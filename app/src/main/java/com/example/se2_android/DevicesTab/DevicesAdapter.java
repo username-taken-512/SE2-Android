@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.se2_android.MainActivity;
 import com.example.se2_android.Models.Device;
 import com.example.se2_android.R;
+import com.example.se2_android.Utils.Constant;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Device currentItem = mItemList.get(position);
+        holder.mDeviceImageView.setImageResource(deviceImagePicker(currentItem.getType()));
 
         holder.mDeviceTextView.setText(currentItem.getName());
         if (currentItem.getValue() == 0) {
@@ -68,15 +70,30 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 Log.i("DevicesAdapter", "onCheckedChanged");
-                boolean checked = ((SwitchCompat)v).isChecked();
+                boolean checked = ((SwitchCompat) v).isChecked();
                 if (checked) {
                     currentItem.setValue(1);
                 } else {
                     currentItem.setValue(0);
                 }
-                ((MainActivity) mContext).changeDevice(currentItem);
+                ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
             }
         });
+    }
+
+    private int deviceImagePicker(String type) {
+        switch (type) {
+            case "lamp":
+                return R.drawable.ic_baseline_lightbulb_48;
+            case "element":
+                return R.drawable.ic_radiator;
+            case "alarm":
+                return R.drawable.ic_alarm_light;
+            case "timer":
+                return R.drawable.ic_baseline_timer_24;
+            default:
+                return R.drawable.ic_baseline_device_unknown_24;
+        }
     }
 
     @Override
