@@ -17,10 +17,19 @@ public class WebsocketViewModel extends ViewModel {
     private WebSocket websocket;
     private boolean websocketConnected;
     private int householdId;
+    private String householdName;
     private ArrayList<Device> deviceList = new ArrayList<>();
     private MutableLiveData<Integer> deviceListVersion;
     private MutableLiveData<Integer> connectionStatus;
     private MutableLiveData<Integer> connectionStatusAuth;
+
+    public String getHouseholdName() {
+        return householdName;
+    }
+
+    public void setHouseholdName(String householdName) {
+        this.householdName = householdName;
+    }
 
     public int getHouseholdId() {
         return householdId;

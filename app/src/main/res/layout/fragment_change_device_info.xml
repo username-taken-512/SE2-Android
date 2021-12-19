@@ -63,6 +63,7 @@
         android:elevation="16dp"
         android:imeOptions="actionNext"
         android:inputType="none"
+        android:editable="false"
         android:minHeight="48dp"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"

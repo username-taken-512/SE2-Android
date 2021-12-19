@@ -46,6 +46,7 @@ public class LoginFragment extends Fragment {
     private Observer<Integer> observer;
 
     User user;
+    Boolean dontLogin = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,25 +108,26 @@ public class LoginFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Integer integer) {
                 Log.i(TAG, "Livedata onChanged: " + integer);
-                if (integer == 1) {         // Connection opened
+                if (integer == 1 && user != null) {         // Connection opened
                     Log.i(TAG, "Livedata onChanged: inside 1");
                     if (websocketAuth != null) {
                         Log.i(TAG, "Livedata onChanged: inside 1, before call");
                         websocketAuth.login(user);
                     }
                 } else if (integer == 2) {  // Token returned, time to login
-                    websocketViewModel.setWebsocket(null);
-                    websocketViewModel.setConnectionStatusAuth(0);
-                    websocketViewModel.setConnectionStatus(0);
-                    try {
-                        Log.i(TAG, "Livedata onChanged, Try to navigate");
-                        websocketViewModel.getConnectionStatusAuth().removeObserver(this);
-                        Toast.makeText(getContext(), "You got logged in as user " + email.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
-                    } catch (Exception e) {
-                        Log.i(TAG, "Livedata onChanged, cought exception:\n" + e.getMessage());
-                        e.printStackTrace();
-                    }
+                    goToHome();
+//                    try {
+//                        Log.i(TAG, "Livedata onChanged, Try to navigate");
+//                        websocketViewModel.getConnectionStatusAuth().removeObserver(this);
+//                        websocketViewModel.setWebsocket(null);
+//                        websocketViewModel.setConnectionStatusAuth(0);
+//                        websocketViewModel.setConnectionStatus(0);
+//                        Toast.makeText(getContext(), "You got logged in as user " + email.getText().toString(), Toast.LENGTH_SHORT).show();
+//                        Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+//                    } catch (Exception e) {
+//                        Log.i(TAG, "Livedata onChanged, cought exception:\n" + e.getMessage());
+//                        e.printStackTrace();
+//                    }
                 }
             }
         };
@@ -137,6 +139,26 @@ public class LoginFragment extends Fragment {
         super.onDestroy();
 //        websocketViewModel.getConnectionStatusAuth().removeObservers(getActivity());
         websocketViewModel.getConnectionStatusAuth().removeObserver(observer);
+    }
+
+    private void goToHome() {
+        try {
+            Log.i(TAG, "Livedata onChanged, Removing observer");
+            websocketViewModel.getConnectionStatusAuth().removeObserver(observer);
+            Log.i(TAG, "Livedata onChanged, set ws null");
+            websocketViewModel.setWebsocket(null);
+//            websocketViewModel.setConnectionStatusAuth(0);
+            Log.i(TAG, "Livedata onChanged, set NOTHOUSE-Status 0");
+            websocketViewModel.setConnectionStatus(0);
+            Toast.makeText(getContext(), "You got logged in as user " + email.getText().toString(), Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Livedata onChanged, Closing ws Auth");
+            websocketAuth.closeConnection();
+            Log.i(TAG, "Livedata onChanged, Navigate");
+            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeFragment);
+        } catch (Exception e) {
+            Log.i(TAG, "Livedata onChanged, cought exception:\n" + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void login() {
@@ -209,7 +231,6 @@ public class LoginFragment extends Fragment {
             }
         });
 
-
         dialog.setNegativeButton("Go back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -225,8 +246,6 @@ public class LoginFragment extends Fragment {
         });
 
         dialog.show();
-
-
     }
 
     public void checkBoxChange(boolean isChecked) {
@@ -235,7 +254,6 @@ public class LoginFragment extends Fragment {
         } else {
             pWord.setTransformationMethod(PasswordTransformationMethod.getInstance());
         }
-
     }
 
     public void checkMailAndSendToServer(String mail) {
@@ -244,7 +262,10 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getContext(), "A valid email is required, no email sent!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Mail sent to " + mail, Toast.LENGTH_SHORT).show();
+            dontLogin = true;
+            websocketAuth = new WebsocketAuth(getContext(), view, getActivity());
+            websocketAuth.sendForgotPassword(mail);
+            dontLogin = false;
         }
     }
-
 }

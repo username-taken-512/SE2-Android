@@ -46,8 +46,8 @@ public class WebsocketAuth {
     private static final int OPCODE_CREATE_HOUSEHOLD_OK = 14;
     private static final int OPCODE_CREATE_HOUSEHOLD = 24;
 
-    private static final String AUTH_SERVER_PATH = "ws://192.168.0.100:7071/houseauth"; // Test IP
-    //    private static final String AUTH_SERVER_PATH = "ws://85.197.159.131:1337/houseauth";     // Bogge IP
+//    private static final String AUTH_SERVER_PATH = "ws://192.168.0.107:7071/houseauth"; // Test IP
+        private static final String AUTH_SERVER_PATH = "ws://85.197.159.150:1337/houseauth";     // Bogge IP
     private static WebSocket webSocket;
     private static Gson gson;
     private static SharedPreferences sharedPref;
@@ -109,6 +109,19 @@ public class WebsocketAuth {
         if (webSocket != null) {
             webSocket.close(1000, "finished");
         }
+    }
+
+    public void sendForgotPassword(String email) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("opcode", Constant.OPCODE_FORGOT_PASSWORD);
+            jsonObject.put("data", email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "sendForgotPassword: Sending: " + jsonObject);
+        webSocket.send(jsonObject.toString());
+        webSocket.close(1000, "finished");
     }
 
     private static class SocketListenerAuth extends WebSocketListener {
@@ -195,11 +208,12 @@ public class WebsocketAuth {
         fragmentActivity.runOnUiThread(() -> {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("token", token);
-            editor.commit();
-            SharedPreferences sharedPref = fragmentActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
-            Log.i(TAG, "2 Stored token: " + sharedPref.getString("token", "none"));
-            websocketViewModel.setConnectionStatusAuth(2);
-            webSocket.close(1000, "finished");
+            if(editor.commit()) {
+                SharedPreferences sharedPref = fragmentActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
+                Log.i(TAG, "2 Stored token: " + sharedPref.getString("token", "none"));
+//                webSocket.close(1000, "finished");
+                websocketViewModel.setConnectionStatusAuth(2);
+            };
         });
         Log.i(TAG, "3 Stored token: " + token);
     }

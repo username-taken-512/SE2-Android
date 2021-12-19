@@ -61,7 +61,7 @@ public class ChangeDeviceInfoFragment extends Fragment {
             public void onClick(View v) {
                 deviceType.showDropDown();
             }
-        }) ;
+        });
 
         deviceType.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -100,11 +100,6 @@ public class ChangeDeviceInfoFragment extends Fragment {
             check = true;
         }
 
-        if (TextUtils.isEmpty(deviceType.getText().toString().trim())) {
-            deviceType.setError("Please select a device type");
-            check = true;
-        }
-
         if (check) {
             return;
         }
@@ -131,20 +126,19 @@ public class ChangeDeviceInfoFragment extends Fragment {
         Navigation.findNavController(view).navigate(R.id.action_changeDeviceInfoFragment_to_editDeviceFragment);
     }
 
-    public void getData(){
-        if (getArguments() != null){
-            devID =getArguments().getInt("devID");
+    public void getData() {
+        if (getArguments() != null) {
+            devID = getArguments().getInt("devID");
             devType = getArguments().getString("devType");
             devName = getArguments().getString("devName");
         }
 
     }
 
-    public void setData(){
+    public void setData() {
         deviceId.setHint(String.valueOf(devID));
         deviceName.setHint(devName);
         deviceName.setText(devName);
         deviceType.setHint(devType);
-        deviceType.setText(devType);
     }
 }

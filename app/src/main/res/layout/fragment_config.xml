@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ConfigTab.ConfigFragment"
-    android:background="@drawable/login_background">
+    android:background="@drawable/login_background"
+    tools:context=".ConfigTab.ConfigFragment">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
         android:text="Configuration"
         android:textColor="@color/black"
         android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_marginTop="12dp"/>
+        android:textStyle="bold" />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -38,8 +38,8 @@
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_gravity="fill"
-            app:cardBackgroundColor="@color/login_blue"
             android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/login_blue"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp">
 
@@ -54,8 +54,7 @@
                     android:id="@+id/editDevice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_settings_48"
-                    android:onClick="editDevice"/>
+                    android:src="@drawable/ic_baseline_settings_48" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -71,7 +70,6 @@
             android:layout_height="wrap_content"
             android:layout_row="0"
             android:layout_rowWeight="1"
-            app:cardBackgroundColor="@color/login_blue"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_gravity="fill"
@@ -79,6 +77,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="@color/login_blue"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp">
 
@@ -93,8 +92,7 @@
                     android:id="@+id/changeHouse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_home_48"
-                    android:onClick="changeHouse"/>
+                    android:src="@drawable/ic_baseline_home_48" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -113,8 +111,8 @@
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_gravity="fill"
-            app:cardBackgroundColor="@color/login_blue"
             android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/login_blue"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp">
 
@@ -129,7 +127,6 @@
                     android:id="@+id/notification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="notification"
                     android:src="@drawable/ic_baseline_circle_notifications_24" />
 
                 <TextView
@@ -146,11 +143,11 @@
             android:layout_height="wrap_content"
             android:layout_row="1"
             android:layout_rowWeight="1"
-            app:cardBackgroundColor="@color/login_blue"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_gravity="fill"
             android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/login_blue"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp">
 
@@ -165,8 +162,7 @@
                     android:id="@+id/logoutConfig"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_logout_24"
-                    android:onClick="logoutConfig"/>
+                    android:src="@drawable/ic_baseline_logout_24" />
 
                 <TextView
                     android:layout_width="wrap_content"

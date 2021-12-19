@@ -52,6 +52,17 @@ public class EditDeviceAdapter extends RecyclerView.Adapter<EditDeviceAdapter.My
                 Navigation.findNavController(v).navigate(R.id.action_editDeviceFragment_to_changeDeviceInfoFragment, bundle);
             }
         });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("devName", devices.get(position).getName());
+                bundle.putString("devType", devices.get(position).getType());
+                bundle.putInt("devID", devices.get(position).getDeviceId());
+                Navigation.findNavController(v).navigate(R.id.action_editDeviceFragment_to_changeDeviceInfoFragment, bundle);
+            }
+        });
     }
 
     @Override

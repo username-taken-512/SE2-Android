@@ -56,7 +56,8 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 websocketViewModel.getConnectionStatus().removeObserver(observer);
                 ((MainActivity) context).disconnectWebsocket();
-                clearToken();
+                ((MainActivity) context).clearToken();
+//                clearToken();
 
                 Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
 
@@ -103,29 +104,6 @@ public class HomeFragment extends Fragment {
             }
         };
         websocketViewModel.getConnectionStatus().observe(getActivity(), observer);
-
-        /*
-        websocketViewModel.getConnectionStatus().observe(getActivity(), new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer integer) {
-                Log.i(TAG, "Livedata onChanged: " + integer);
-                if (integer == 0) {         // Connection not open, should open
-                    Log.i(TAG, "Livedata trying to connect if ws is null: " + integer);
-                    ((MainActivity) context).connectWebsocket(token);
-                } else if (integer == 1) {  // Connected
-
-                } else if (integer == 3) {  // Token invalid. Clear token and return to login
-                    Log.i(TAG, "Livedata clearing token and going login: " + integer);
-//                    clearToken();
-//                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
-                }
-            }
-        });
-
-         */
-
-        //Connect Websocket
-//        ((MainActivity) context).connectWebsocket(token);
     }
 
     @Override

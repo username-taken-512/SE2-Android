@@ -16,6 +16,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.se2_android.Models.Device;
+import com.example.se2_android.Models.Household;
+import com.example.se2_android.Models.User;
 import com.example.se2_android.Utils.Constant;
 import com.example.se2_android.Utils.WebsocketViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -46,9 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static WebSocket webSocket;
     //Mats IP: 85.197.159.131, Mats websocket port: 1337
-    private static String SERVER_PATH = "ws://192.168.0.100:7071/house?token=";
-    //    private static String SERVER_PATH = "ws://85.197.159.131:1337/house?token=123";
-//    private static String SERVER_PATH = "ws://194.47.44.4:7071/house?token=123";
+//    private static String SERVER_PATH = "ws://192.168.0.107:7071/house?token=";
+    private static String SERVER_PATH = "ws://85.197.159.150:1337/house?token=";
+
     private static Gson gson;
     private WebsocketViewModel websocketViewModel;
     private SharedPreferences sharedPref;
@@ -140,13 +142,26 @@ public class MainActivity extends AppCompatActivity {
                         statusDevice(jsonObject);
                         break;
                     case OPCODE_CHANGE_DEVICE_NOTOK:
-                        Toast.makeText(MainActivity.this, "Could not connect to device", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(() -> {
+                            Toast.makeText(MainActivity.this, "Could not connect to device", Toast.LENGTH_SHORT).show();
+                        });
                         statusDevice(jsonObject);
                         break;
                     case OPCODE_INVALID_TOKEN:
                         runOnUiThread(() -> {
                             clearToken();
                             websocketViewModel.setConnectionStatus(3);
+                        });
+                        break;
+                    case Constant.OPCODE_CREATE_HOUSEHOLD_OK:
+                        householdCreated(jsonObject, true);
+                        break;
+                    case Constant.OPCODE_CREATE_HOUSEHOLD_NOTOK:
+                        householdCreated(jsonObject, false);
+                        break;
+                    case Constant.OPCODE_USER_CHANGE_HOUSEHOLD_NOTOK:
+                        runOnUiThread(() -> {
+                            Toast.makeText(MainActivity.this, "Could not join household", Toast.LENGTH_SHORT).show();
                         });
                         break;
                 }
@@ -165,8 +180,6 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 websocketViewModel.setWebsocketConnected(false);
             });
-            Log.i(TAG, "onClosed - Trying to reconnect... " + websocketViewModel.isWebsocketConnected());
-            //TODO: Reconnect feature - connectWebsocket();
         }
 
         @Override
@@ -190,12 +203,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void clearToken() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("token", "");
+        editor.commit();
+    }
 
     // --- Websocket incoming message methods ---
     public void statusAllDevices(JSONArray jsonArray, JSONObject jsonObject) throws JSONException {
         websocketViewModel.resetDeviceList();
         Log.i(TAG, "onMessage SEND ALL DEVICES");
         jsonArray = jsonObject.getJSONArray("data");
+        Household household = gson.fromJson(String.valueOf(jsonObject.get("household")), Household.class);
+        websocketViewModel.setHouseholdId(household.getHouseholdId());
+        websocketViewModel.setHouseholdName(household.getName());
 
         for (int i = 0; i < jsonArray.length(); i++) {
             Log.i(TAG, "onMessage for loop: " + jsonArray.getString(i));
@@ -203,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
 
             websocketViewModel.addToDeviceList(gson.fromJson(jsonArray.getString(i), Device.class));
             Log.i(TAG, "onMessage for-loop list size: " + websocketViewModel.getDeviceList().size());
-            websocketViewModel.setHouseholdId(device.getHouseholdId());
         }
         Log.i(TAG, "onMessage for-loop left loop");
         runOnUiThread(() -> {
@@ -244,6 +264,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void householdCreated(JSONObject jsonObject, boolean responseOk) {
+        if (responseOk) {
+            try {
+                Household household = gson.fromJson(jsonObject.getString("data"), Household.class);
+                changeHousehold(household.getHouseholdId());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Could not create household", Toast.LENGTH_SHORT).show();
+            });
+        }
+    }
+
+    private void changedHousehold(JSONObject jsonObject) {
+
+    }
+
+
     // --- Websocket outgoing message methods ---
 
     //Called from DevicesFragment
@@ -259,9 +299,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void clearToken() {
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("token", "");
-        editor.commit();
+    //Called from ConfigFragment
+    public void sendNewHousehold(Household household) {
+        Log.i(TAG, "NewHousehold: " + household.getName());
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("opcode", Constant.OPCODE_CREATE_HOUSEHOLD);
+            jsonObject.put("data", gson.toJson(household));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "NewHousehold: Sending: " + jsonObject);
+        webSocket.send(jsonObject.toString());
+    }
+
+    public void changeHousehold(int newId) {
+        //Clear devicelist
+        websocketViewModel.resetDeviceList();
+
+        //Send household
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("opcode", Constant.OPCODE_USER_CHANGE_HOUSEHOLD);
+            jsonObject.put("data", newId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "changeHousehold: Sending: " + jsonObject);
+        webSocket.send(jsonObject.toString());
     }
 }
