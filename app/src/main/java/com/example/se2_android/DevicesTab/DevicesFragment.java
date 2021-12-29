@@ -67,16 +67,6 @@ public class DevicesFragment extends Fragment {
         }
         setupRecyclerView();
 
-        //TODO: Future use = add device. Currently a refresh button for testing
-        FloatingActionButton fab = view.findViewById(R.id.addButtonConfig);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                websocketViewModel.addDeviceListVersion();
-                Log.i(TAG, "FAB: Increased number");
-            }
-        });
-
         return view;
     }
 

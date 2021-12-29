@@ -27,10 +27,12 @@ import java.util.Locale;
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
     private static final int DEVICE_VIEWTYPE_DEFAULT = 1;
     private static final int DEVICE_VIEWTYPE_FAN = 2;
+    private static final int DEVICE_VIEWTYPE_THERMOMETER = 3;
 
     private ArrayList<Device> mItemList;
     private Context mContext;
 
+    // Main ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mDeviceTextView;
         public ImageView mDeviceImageView;
@@ -44,6 +46,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
         }
     }
 
+    // --- Different ViewHolder Views ---------------
+    // Fan ViewHolder
     public static class ViewHolderFan extends DevicesAdapter.ViewHolder {
         public TextView mDeviceTextView;
         public ImageView mDeviceImageView;
@@ -56,6 +60,21 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             mDeviceSlider = itemView.findViewById(R.id.deviceSlider);
         }
     }
+
+    // Thermometer ViewHolder
+    public static class ViewHolderThermometer extends DevicesAdapter.ViewHolder {
+        public TextView mDeviceTextView;
+        public ImageView mDeviceImageView;
+        public TextView mDeviceTextViewValue;
+
+        public ViewHolderThermometer(View itemView) {
+            super(itemView);
+            mDeviceTextView = itemView.findViewById(R.id.deviceTextView);
+            mDeviceImageView = itemView.findViewById(R.id.deviceImageView);
+            mDeviceTextViewValue = itemView.findViewById(R.id.deviceTextViewValue);
+        }
+    }
+    // --------------------------------------------
 
     public DevicesAdapter(ArrayList<Device> itemList, Context context) {
         mItemList = itemList;
@@ -72,6 +91,10 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item_fan, parent, false);
                 return new ViewHolderFan(v);
+            case DEVICE_VIEWTYPE_THERMOMETER:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.devices_rv_item_thermometer, parent, false);
+                return new ViewHolderThermometer(v);
             default:
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item, parent, false);
@@ -104,31 +127,86 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                     }
                 });
                 break;
-            default:
-                if (currentItem.getValue() == 0) {
+            case "alarm":
+                setSwitchListeners(holder, currentItem);
+
+                if (currentItem.getValue() == 0) {          // Disarmed, no alarm
                     holder.mDeviceImageView.setColorFilter(Color.GRAY);
                     holder.mDeviceSwitch.setChecked(false);
-                } else {
-                    //TODO: Change to use theme colors
+                } else if (currentItem.getValue() == 1) {   // Armed, No alarm
                     holder.mDeviceImageView.setColorFilter(Color.GREEN);
+                    holder.mDeviceSwitch.setChecked(true);
+                } else if (currentItem.getValue() == 2) {   // Armed, Alarming
+                    holder.mDeviceImageView.setColorFilter(Color.RED);
                     holder.mDeviceSwitch.setChecked(true);
                 }
 
-                holder.mDeviceSwitch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i("DevicesAdapter", "onCheckedChanged");
-                        boolean checked = ((SwitchCompat) v).isChecked();
-                        if (checked) {
-                            currentItem.setValue(1);
+                // If all alarms are disarmed, disable switch
+                for (Device d : mItemList) {
+                    if (d.getType().equals("masteralarm")) {
+                        if(d.getValue() == 1) {
+                            Log.i("DevicesAdapter", "hmm");
+                            holder.mDeviceSwitch.setVisibility(View.INVISIBLE);
                         } else {
-                            currentItem.setValue(0);
+                            holder.mDeviceSwitch.setVisibility(View.VISIBLE);
                         }
-                        ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
                     }
-                });
+                }
+                break;
+            case "masteralarm":
+                    // All alarms disarmed
+                if (currentItem.getValue() == 0) {
+                    holder.mDeviceImageView.setColorFilter(Color.GRAY);
+                    holder.mDeviceSwitch.setChecked(false);
+                } else if (currentItem.getValue() == 1) {
+                    holder.mDeviceImageView.setColorFilter(Color.GREEN);
+                    // If all alarms are armed AND If any alarm is alarming, display red
+                    for (Device d : mItemList) {
+                        if (d.getType().equals("alarm")) {
+                            if(d.getValue() == 2) {
+                                holder.mDeviceImageView.setColorFilter(Color.RED);
+                                break;
+                            }
+                        }
+                    }
+                    holder.mDeviceSwitch.setChecked(true);
+                }
+                setSwitchListeners(holder, currentItem);
+                break;
+            case "thermometer":
+                DevicesAdapter.ViewHolderThermometer thermometerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
+                thermometerHolder.mDeviceTextViewValue.findViewById(R.id.deviceTextViewValue);
+                thermometerHolder.mDeviceTextViewValue.setText(String.valueOf(currentItem.getValue() +" C"));
+                break;
+            default:
+                setSwitchListeners(holder, currentItem);
                 break;
         }
+    }
+
+    private void setSwitchListeners(DevicesAdapter.ViewHolder holder, Device currentItem) {
+        if (currentItem.getValue() == 0) {
+            holder.mDeviceImageView.setColorFilter(Color.GRAY);
+            holder.mDeviceSwitch.setChecked(false);
+        } else {
+            //TODO: Change to use theme colors
+            holder.mDeviceImageView.setColorFilter(Color.GREEN);
+            holder.mDeviceSwitch.setChecked(true);
+        }
+
+        holder.mDeviceSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("DevicesAdapter", "onCheckedChanged");
+                boolean checked = ((SwitchCompat) v).isChecked();
+                if (checked) {
+                    currentItem.setValue(1);
+                } else {
+                    currentItem.setValue(0);
+                }
+                ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+            }
+        });
     }
 
     @Override
@@ -138,6 +216,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
         switch (type) {
             case "fan":
                 return DEVICE_VIEWTYPE_FAN;
+            case "thermometer":
+                return DEVICE_VIEWTYPE_THERMOMETER;
             default:
                 return DEVICE_VIEWTYPE_DEFAULT;
         }
@@ -151,8 +231,12 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 return R.drawable.ic_radiator;
             case "alarm":
                 return R.drawable.ic_alarm_light;
+            case "masteralarm":
+                return R.drawable.shield_home;
             case "timer":
                 return R.drawable.ic_baseline_timer_24;
+            case "thermometer":
+                return R.drawable.thermometer_lines;
             default:
                 return R.drawable.ic_baseline_device_unknown_24;
         }
