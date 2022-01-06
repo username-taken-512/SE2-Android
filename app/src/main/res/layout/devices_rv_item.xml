@@ -20,12 +20,13 @@
             android:id="@+id/deviceTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="8dp"
             android:text="Bedroom 1\nBedlamp"
+            android:maxLines="3"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/deviceSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewTimer"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/deviceImageView"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +35,6 @@
             android:id="@+id/deviceImageView"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,13 +50,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="8dp"
             android:scaleX="2"
             android:scaleY="2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewTimer"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/deviceSwitch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_timer_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

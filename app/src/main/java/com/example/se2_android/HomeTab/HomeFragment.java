@@ -1,14 +1,24 @@
 package com.example.se2_android.HomeTab;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,17 +29,27 @@ import androidx.navigation.Navigation;
 import com.example.se2_android.MainActivity;
 import com.example.se2_android.Models.Device;
 import com.example.se2_android.R;
+import com.example.se2_android.Utils.Constant;
 import com.example.se2_android.Utils.WebsocketViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
+
+    private static final String SPEECH_LANGUAGE = "en-US";
     private Context context;
     private View view;
     private SharedPreferences sharedPref;
     private static WebsocketViewModel websocketViewModel;
     private Observer<Integer> connectionObserver, houseObserver;
 
-    TextView houseTextView, welcomeTextView, thermometerTextView, alarmTextView;
+    private TextView houseTextView, welcomeTextView, thermometerTextView, alarmTextView, powerTextView;
+    private FloatingActionButton speechButton;
+    private TextToSpeech textToSpeech;
 
 
     @Override
@@ -44,6 +64,8 @@ public class HomeFragment extends Fragment {
         thermometerTextView = view.findViewById(R.id.thermometerTextView);
         alarmTextView = view.findViewById(R.id.alarmsTextView);
         welcomeTextView = view.findViewById(R.id.welcomeTextView);
+        speechButton = view.findViewById(R.id.voiceButton);
+        powerTextView = view.findViewById(R.id.powerTextView);
         return view;
     }
 
@@ -52,6 +74,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         begin();
+        voiceIntent();
     }
 
     private void begin() {
@@ -79,8 +102,8 @@ public class HomeFragment extends Fragment {
 
                 } else if (integer == 3) {  // Token invalid. Clear token and return to login
                     Log.i(TAG, "Livedata clearing token and going login: " + integer);
-//                    clearToken();
-//                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+                    clearToken();
+                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
                 }
             }
         };
@@ -91,25 +114,33 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(Integer integer) {
 
-                String alarmText = "";
+                Boolean allAlarmsOn = true;
+                String alarmText = "No alarms in the house";
                 String thermometerText = "";
                 String houseText = websocketViewModel.getHouseholdName() +
                         "\nid: " + websocketViewModel.getHouseholdId();
+                String powerText = "";
                 for (Device d : websocketViewModel.getDeviceList()) {
                     if (d.getType().equals("thermometer")) {
                         thermometerText += d.getName() + ": " + d.getValue() + " C\n";
                     }
-                    if (d.getType().equals("masteralarm")) {
-                        if (d.getValue() == 1) {
+                    if (d.getType().equals("alarm")) {
+                        if (d.getValue() == 1 && allAlarmsOn) {
                             alarmText = "All alarms are ON";
                         } else if (d.getValue() == 0) {
+                            allAlarmsOn = false;
                             alarmText = "All alarms are NOT on";
                         }
+                    }
+                    if (d.getType().equals("powersensor")) {
+                        double power = ((double) d.getValue()) / 10;
+                        powerText = power + " W";
                     }
                 }
                 houseTextView.setText(houseText);
                 thermometerTextView.setText(thermometerText);
                 alarmTextView.setText(alarmText);
+                powerTextView.setText(powerText);
                 welcomeTextView.setText("Welcome, " + websocketViewModel.getNameOfUser());
             }
         };
@@ -118,9 +149,14 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+
         websocketViewModel.getConnectionStatus().removeObserver(connectionObserver);
         websocketViewModel.getDeviceListVersion().removeObserver(houseObserver);
+        super.onDestroy();
     }
 
     private void getToken() {
@@ -131,5 +167,139 @@ public class HomeFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("token", "");
         editor.commit();
+    }
+
+    // --- Speech to Device ---
+    private void voiceIntent() {
+        textToSpeech = new TextToSpeech(context.getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                Log.i(TAG, "tts init " + status);
+                if (status != TextToSpeech.ERROR) {
+                    Log.i(TAG, "tts init no error");
+                    textToSpeech.setLanguage(Locale.UK);
+                }
+            }
+        });
+
+        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+
+                            // There are no request codes
+                            Intent data = result.getData();
+                            ArrayList<String> voiceText = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                            Log.i(TAG, "Voice collected: " + voiceText.get(0));
+                            for (String s : voiceText) {
+                                Log.i(TAG, "-Voice collected: " + s);
+                            }
+                            talkToDevice(voiceText.get(0));
+
+                        }
+                    }
+                });
+
+        speechButton.setOnClickListener(v -> {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, SPEECH_LANGUAGE);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Talk to me, babe");
+            someActivityResultLauncher.launch(intent);
+        });
+    }
+
+    private void talkToDevice(String string) {
+        String[] splitString = string.split(" ");
+        ArrayList<String> splitArray = new ArrayList<>(Arrays.asList(splitString));
+        String command = "";
+        String devicename = "";
+        String message = "";
+
+        if (string.startsWith("help")) {
+            message = "Say 'show', 'start' or 'stop' followed by a device name";
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
+            return;
+        }
+
+        if (splitArray.size() < 2) {
+            message = "Sorry, I didn't understand";
+        }
+        command = splitArray.get(0);
+        splitArray.remove(0);
+
+        // All words after command -> device name
+        for (String s : splitArray) {
+            devicename += s + " ";
+        }
+        devicename = devicename.trim();
+
+        Device device = null;
+        for (Device d : websocketViewModel.getDeviceList()) {
+            if (d.getName().equalsIgnoreCase(devicename)) {
+                Log.i(TAG, "Found device ");
+                device = d;
+                break;
+            }
+        }
+        if (device == null) {
+            message = "Sorry, could not find " + devicename;
+            Toast.makeText(context, message + devicename, Toast.LENGTH_SHORT).show();
+            textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
+            return;
+        }
+
+        if (command.equalsIgnoreCase("show")) {
+            if (device.getType().equalsIgnoreCase("lamp") ||
+                    device.getType().equalsIgnoreCase("element") ||
+                    device.getType().equalsIgnoreCase("masteralarm")) {
+                // Toast Device status
+                message = devicename + " is " + (device.getValue() == 0 ? " OFF" : " ON");
+            } else {
+                message = devicename + " is at " + device.getValue();
+            }
+        }
+
+        if (command.equalsIgnoreCase("start")) {
+            if (device.getType().equalsIgnoreCase("lamp") ||
+                    device.getType().equalsIgnoreCase("element") ||
+                    device.getType().equalsIgnoreCase("masteralarm")) {
+                // Turn on device
+                device.setValue(1);
+            } else if (device.getType().equalsIgnoreCase("fan")) {
+                device.setValue(100);
+            } else { // Device type not changeable by voice
+                return;
+            }
+            message = "Turning on " + devicename;
+            ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+            Log.i(TAG, "Devicename: " + devicename);
+        }
+
+        if (command.equalsIgnoreCase("stop")) {
+            if (device.getType().equalsIgnoreCase("lamp") ||
+                    device.getType().equalsIgnoreCase("element") ||
+                    device.getType().equalsIgnoreCase("masteralarm") ||
+                    device.getType().equalsIgnoreCase("fan")) {
+                // Turn off device
+                device.setValue(0);
+                message = "Turning off " + devicename;
+                ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+                Log.i(TAG, "Devicename: " + devicename);
+            }
+        }
+
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+
+    @Override
+    public void onPause() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+        }
+        super.onPause();
     }
 }

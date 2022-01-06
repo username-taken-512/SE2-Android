@@ -21,4 +21,5 @@ public class Constant {
     public static final int OPCODE_CREATE_HOUSEHOLD = 24;
     public static final int OPCODE_CREATE_HOUSEHOLD_NOTOK = 44;
 
+    public static final long TIMER_MILLIS = 10000;
 }

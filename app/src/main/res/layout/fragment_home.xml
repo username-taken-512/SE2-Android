@@ -8,8 +8,8 @@
     tools:context=".HomeTab.HomeFragment">
 
     <TextView
-        style="@style/textShadowOnPrimary"
         android:id="@+id/houseTextView"
+        style="@style/textShadowOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,8 +37,8 @@
         app:layout_constraintTop_toTopOf="@+id/imageView3" />
 
     <TextView
-        style="@style/textShadowOnPrimary"
         android:id="@+id/alarmsTextView"
+        style="@style/textShadowOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -50,20 +50,63 @@
         app:layout_constraintTop_toTopOf="@+id/imageView4" />
 
     <TextView
+        android:id="@+id/powerTextView"
+        style="@style/textShadowOnPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Power: 300W"
+        android:textColor="@color/design_default_color_on_primary"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
+    <TextView
         android:id="@+id/welcomeTextView"
+        style="@style/textShadowOnPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="32dp"
+
         android:text="Welcome, Namn Namn"
 
         android:textSize="30sp"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/textShadowOnPrimary" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/home_lightning_bolt"
+        app:layout_constraintBottom_toTopOf="@+id/voiceButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/shield_home_outline"
+        app:layout_constraintBottom_toTopOf="@+id/imageView5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/thermometer_lines_outline"
+        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -77,26 +120,17 @@
         app:layout_constraintTop_toBottomOf="@+id/welcomeTextView"
         app:layout_constraintVertical_chainStyle="spread" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/thermometer_lines_outline"
-        app:layout_constraintBottom_toTopOf="@+id/imageView4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:src="@drawable/shield_home_outline"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/voiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_baseline_record_voice_over_24"
+        android:text="Button"
+        app:fabCustomSize="@dimen/fab_size"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="48dp"
+        app:tint="@null" />
 </androidx.constraintlayout.widget.ConstraintLayout>

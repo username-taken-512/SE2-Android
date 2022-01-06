@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static WebSocket webSocket;
     //Mats IP: 85.197.159.131, Mats websocket port: 1337
-    private static String SERVER_PATH = "ws://192.168.50.36:7071/house?token=";
-//    private static String SERVER_PATH = "ws://85.197.159.150:1337/house?token=";
+//    private static String SERVER_PATH = "ws://192.168.0.100:7071/house?token=";
+    private static String SERVER_PATH = "ws://85.197.159.150:1337/house?token=";
 
     private static Gson gson;
     private WebsocketViewModel websocketViewModel;

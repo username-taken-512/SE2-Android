@@ -24,6 +24,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import okhttp3.WebSocket;
 
@@ -99,6 +102,17 @@ public class DevicesFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Integer integer) {
                 Log.i(TAG, "Livedata onChanged: " + integer);
+                List<Device> sortedList = new ArrayList();
+                if (websocketViewModel.getDeviceList().size() > 0) {
+                    Collections.sort(websocketViewModel.getDeviceList(), new Comparator<Device>() {
+                        @Override
+                        public int compare(final Device object1, final Device object2) {
+                            return object2.getType().compareTo(object1.getType());
+                        }
+                    });
+                }
+
+
                 mAdapter.notifyDataSetChanged();
             }
         });

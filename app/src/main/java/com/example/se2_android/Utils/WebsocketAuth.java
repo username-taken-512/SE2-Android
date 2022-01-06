@@ -46,7 +46,7 @@ public class WebsocketAuth {
     private static final int OPCODE_CREATE_HOUSEHOLD_OK = 14;
     private static final int OPCODE_CREATE_HOUSEHOLD = 24;
 
-//    private static final String AUTH_SERVER_PATH = "ws://192.168.0.107:7071/houseauth"; // Test IP
+//    private static final String AUTH_SERVER_PATH = "ws://192.168.0.100:7071/houseauth"; // Test IP
         private static final String AUTH_SERVER_PATH = "ws://85.197.159.150:1337/houseauth";     // Bogge IP
     private static WebSocket webSocket;
     private static Gson gson;

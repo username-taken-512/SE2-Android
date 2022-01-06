@@ -6,9 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
@@ -18,16 +18,16 @@ import com.example.se2_android.MainActivity;
 import com.example.se2_android.Models.Device;
 import com.example.se2_android.R;
 import com.example.se2_android.Utils.Constant;
-import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Calendar;
 
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
     private static final int DEVICE_VIEWTYPE_DEFAULT = 1;
     private static final int DEVICE_VIEWTYPE_FAN = 2;
     private static final int DEVICE_VIEWTYPE_THERMOMETER = 3;
+    private static final int DEVICE_VIEWTYPE_POWERSENSOR = 4;
 
     private ArrayList<Device> mItemList;
     private Context mContext;
@@ -37,16 +37,20 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
         public TextView mDeviceTextView;
         public ImageView mDeviceImageView;
         public SwitchCompat mDeviceSwitch;
+        public ImageView mImageViewTimer;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mDeviceTextView = itemView.findViewById(R.id.deviceTextView);
             mDeviceImageView = itemView.findViewById(R.id.deviceImageView);
             mDeviceSwitch = itemView.findViewById(R.id.deviceSwitch);
+            mImageViewTimer = itemView.findViewById(R.id.imageViewTimer);
         }
     }
 
     // --- Different ViewHolder Views ---------------
+
+
     // Fan ViewHolder
     public static class ViewHolderFan extends DevicesAdapter.ViewHolder {
         public TextView mDeviceTextView;
@@ -91,6 +95,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item_fan, parent, false);
                 return new ViewHolderFan(v);
+            case DEVICE_VIEWTYPE_POWERSENSOR:   // Use same as thermometer
             case DEVICE_VIEWTYPE_THERMOMETER:
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item_thermometer, parent, false);
@@ -129,6 +134,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 break;
             case "alarm":
                 setSwitchListeners(holder, currentItem);
+                holder.mImageViewTimer.setVisibility(View.INVISIBLE);
 
                 if (currentItem.getValue() == 0) {          // Disarmed, no alarm
                     holder.mDeviceImageView.setColorFilter(Color.GRAY);
@@ -142,41 +148,47 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 }
 
                 // If all alarms are disarmed, disable switch
-                for (Device d : mItemList) {
-                    if (d.getType().equals("masteralarm")) {
-                        if(d.getValue() == 1) {
-                            Log.i("DevicesAdapter", "hmm");
-                            holder.mDeviceSwitch.setVisibility(View.INVISIBLE);
-                        } else {
-                            holder.mDeviceSwitch.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
+//                for (Device d : mItemList) {
+//                    if (d.getType().equals("masteralarm")) {
+//                        if(d.getValue() == 1) {
+//                            Log.i("DevicesAdapter", "hmm");
+//                            holder.mDeviceSwitch.setVisibility(View.INVISIBLE);
+//                        } else {
+//                            holder.mDeviceSwitch.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                }
                 break;
-            case "masteralarm":
-                    // All alarms disarmed
-                if (currentItem.getValue() == 0) {
-                    holder.mDeviceImageView.setColorFilter(Color.GRAY);
-                    holder.mDeviceSwitch.setChecked(false);
-                } else if (currentItem.getValue() == 1) {
-                    holder.mDeviceImageView.setColorFilter(Color.GREEN);
-                    // If all alarms are armed AND If any alarm is alarming, display red
-                    for (Device d : mItemList) {
-                        if (d.getType().equals("alarm")) {
-                            if(d.getValue() == 2) {
-                                holder.mDeviceImageView.setColorFilter(Color.RED);
-                                break;
-                            }
-                        }
-                    }
-                    holder.mDeviceSwitch.setChecked(true);
-                }
-                setSwitchListeners(holder, currentItem);
-                break;
+//            case "masteralarm":
+//                    // All alarms disarmed
+//                if (currentItem.getValue() == 0) {
+//                    holder.mDeviceImageView.setColorFilter(Color.GRAY);
+//                    holder.mDeviceSwitch.setChecked(false);
+//                } else if (currentItem.getValue() == 1) {
+//                    holder.mDeviceImageView.setColorFilter(Color.GREEN);
+//                    // If all alarms are armed AND If any alarm is alarming, display red
+//                    for (Device d : mItemList) {
+//                        if (d.getType().equals("alarm")) {
+//                            if(d.getValue() == 2) {
+//                                holder.mDeviceImageView.setColorFilter(Color.RED);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    holder.mDeviceSwitch.setChecked(true);
+//                }
+//                setSwitchListeners(holder, currentItem);
+//                break;
             case "thermometer":
                 DevicesAdapter.ViewHolderThermometer thermometerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
                 thermometerHolder.mDeviceTextViewValue.findViewById(R.id.deviceTextViewValue);
                 thermometerHolder.mDeviceTextViewValue.setText(String.valueOf(currentItem.getValue() +" C"));
+                break;
+            case "powersensor":
+                DevicesAdapter.ViewHolderThermometer powerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
+                powerHolder.mDeviceTextViewValue.findViewById(R.id.deviceTextViewValue);
+                double power = ((double) currentItem.getValue()) / 10;
+                powerHolder.mDeviceTextViewValue.setText(String.valueOf(power +" W"));
                 break;
             default:
                 setSwitchListeners(holder, currentItem);
@@ -192,6 +204,18 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             //TODO: Change to use theme colors
             holder.mDeviceImageView.setColorFilter(Color.GREEN);
             holder.mDeviceSwitch.setChecked(true);
+        }
+
+        if (!(currentItem.getType().equals("alarm"))) {
+            holder.mImageViewTimer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(mContext, currentItem.getName() + " will turn off after 30 min", Toast.LENGTH_SHORT).show();
+                    Calendar cal = Calendar.getInstance();
+                    currentItem.setTimer(cal.getTimeInMillis() + Constant.TIMER_MILLIS);
+                    ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+                }
+            });
         }
 
         holder.mDeviceSwitch.setOnClickListener(new View.OnClickListener() {
@@ -218,6 +242,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 return DEVICE_VIEWTYPE_FAN;
             case "thermometer":
                 return DEVICE_VIEWTYPE_THERMOMETER;
+            case "powersensor":
+                return DEVICE_VIEWTYPE_POWERSENSOR;
             default:
                 return DEVICE_VIEWTYPE_DEFAULT;
         }
@@ -231,12 +257,14 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 return R.drawable.ic_radiator;
             case "alarm":
                 return R.drawable.ic_alarm_light;
-            case "masteralarm":
-                return R.drawable.shield_home;
+            case "fan":
+                return R.drawable.fan;
             case "timer":
                 return R.drawable.ic_baseline_timer_24;
             case "thermometer":
                 return R.drawable.thermometer_lines;
+            case "powersensor":
+                return R.drawable.home_lightning_bolt;
             default:
                 return R.drawable.ic_baseline_device_unknown_24;
         }
