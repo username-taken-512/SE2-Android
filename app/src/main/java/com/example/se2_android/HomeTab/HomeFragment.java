@@ -122,7 +122,8 @@ public class HomeFragment extends Fragment {
                 String powerText = "";
                 for (Device d : websocketViewModel.getDeviceList()) {
                     if (d.getType().equals("thermometer")) {
-                        thermometerText += d.getName() + ": " + d.getValue() + " C\n";
+                        double temp = ((double) d.getValue() / 10);
+                        thermometerText += d.getName() + ": " + temp + " C\n";
                     }
                     if (d.getType().equals("alarm")) {
                         if (d.getValue() == 1 && allAlarmsOn) {

@@ -59,6 +59,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:visibility="invisible"
             android:id="@+id/imageViewTimer"
             android:layout_width="64dp"
             android:layout_height="64dp"

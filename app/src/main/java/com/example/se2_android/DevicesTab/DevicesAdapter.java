@@ -182,7 +182,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             case "thermometer":
                 DevicesAdapter.ViewHolderThermometer thermometerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
                 thermometerHolder.mDeviceTextViewValue.findViewById(R.id.deviceTextViewValue);
-                thermometerHolder.mDeviceTextViewValue.setText(String.valueOf(currentItem.getValue() +" C"));
+                double temperature = ((double) currentItem.getValue()) / 10;
+                thermometerHolder.mDeviceTextViewValue.setText(temperature +" C");
                 break;
             case "powersensor":
                 DevicesAdapter.ViewHolderThermometer powerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
@@ -201,12 +202,12 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             holder.mDeviceImageView.setColorFilter(Color.GRAY);
             holder.mDeviceSwitch.setChecked(false);
         } else {
-            //TODO: Change to use theme colors
             holder.mDeviceImageView.setColorFilter(Color.GREEN);
             holder.mDeviceSwitch.setChecked(true);
         }
 
-        if (!(currentItem.getType().equals("alarm"))) {
+        if ((currentItem.getType().equals("lamp"))) {
+            holder.mImageViewTimer.setVisibility(View.VISIBLE);
             holder.mImageViewTimer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -265,6 +266,10 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 return R.drawable.thermometer_lines;
             case "powersensor":
                 return R.drawable.home_lightning_bolt;
+            case "autotoggle":
+                return R.drawable.ic_baseline_sensors_24;
+            case "autosettings":
+                return R.drawable.ic_baseline_settings_48;
             default:
                 return R.drawable.ic_baseline_device_unknown_24;
         }
