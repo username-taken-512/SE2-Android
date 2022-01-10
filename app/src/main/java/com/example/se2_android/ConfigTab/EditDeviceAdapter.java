@@ -92,8 +92,18 @@ public class EditDeviceAdapter extends RecyclerView.Adapter<EditDeviceAdapter.My
                 return R.drawable.ic_radiator;
             case "alarm":
                 return R.drawable.ic_alarm_light;
+            case "fan":
+                return R.drawable.fan;
             case "timer":
                 return R.drawable.ic_baseline_timer_24;
+            case "thermometer":
+                return R.drawable.thermometer_lines;
+            case "powersensor":
+                return R.drawable.home_lightning_bolt;
+            case "autotoggle":
+                return R.drawable.ic_baseline_sensors_24;
+            case "autosettings":
+                return R.drawable.ic_baseline_settings_48;
             default:
                 return R.drawable.ic_baseline_device_unknown_24;
         }

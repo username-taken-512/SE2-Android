@@ -18,18 +18,14 @@
 
         <TextView
             android:id="@+id/deviceTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:text="Bedroom 1\nBedlamp"
             android:maxLines="3"
-            android:textColor="@color/design_default_color_on_secondary"
-            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewTimer"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/deviceImageView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/rv_item_text" />
 
         <ImageView
             android:id="@+id/deviceImageView"

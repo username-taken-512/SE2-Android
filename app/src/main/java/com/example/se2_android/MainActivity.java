@@ -242,16 +242,22 @@ public class MainActivity extends AppCompatActivity {
 
         boolean existingDevice = false;
         for (Device d : currentList) {
-            Log.i(TAG, "onMessage SEND ONE DEVICE FOR");
             if (device.getDeviceId() == d.getDeviceId()) {
                 if (d.getHouseholdId() != device.getHouseholdId()) {
                     currentList.remove(d);
                 }
-                Log.i(TAG, "onMessage SEND ONE DEVICE IF");
                 d.setValue(device.getValue());
                 d.setType(device.getType());
                 d.setName(device.getName());
+                d.setTimer(device.getTimer());
                 existingDevice = true;
+
+                //Notify if alarm
+                if (d.getType().equals("alarm") && d.getValue() == 2) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, d.getName() + " triggered!", Toast.LENGTH_SHORT).show();
+                    });
+                }
                 break;
             }
         }

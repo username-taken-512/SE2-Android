@@ -20,10 +20,9 @@
             android:id="@+id/deviceTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
+
             android:text="Bedroom 1\nBedlamp"
-            android:textColor="@color/design_default_color_on_secondary"
-            android:textSize="24sp"
+            style="@style/rv_item_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/deviceTextViewValue"
             app:layout_constraintHorizontal_bias="0.0"
@@ -53,7 +52,7 @@
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
             android:text="10"
-            android:textSize="24sp"
+            style="@style/rv_item_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

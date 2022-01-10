@@ -33,7 +33,7 @@ public class AddDeviceFragment extends Fragment {
     String devType, devName;
 
     private final static String[] DEVICETYPES = new String[]{
-            "lamp", "element", "timer", "alarm"
+            "lamp", "element", "alarm", "thermometer", "fan", "autotoggle", "autosettings", "powersensor"
     };
 
 

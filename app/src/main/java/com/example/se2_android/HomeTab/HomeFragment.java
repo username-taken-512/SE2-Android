@@ -206,7 +206,7 @@ public class HomeFragment extends Fragment {
         speechButton.setOnClickListener(v -> {
             Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, SPEECH_LANGUAGE);
-            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Talk to me, babe");
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say 'help' for instructions");
             someActivityResultLauncher.launch(intent);
         });
     }
@@ -220,8 +220,7 @@ public class HomeFragment extends Fragment {
 
         if (string.startsWith("help")) {
             message = "Say 'show', 'start' or 'stop' followed by a device name";
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-            textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
+            sayMessage(message);
             return;
         }
 
@@ -240,58 +239,102 @@ public class HomeFragment extends Fragment {
         Device device = null;
         for (Device d : websocketViewModel.getDeviceList()) {
             if (d.getName().equalsIgnoreCase(devicename)) {
-                Log.i(TAG, "Found device ");
+                Log.i(TAG, "TTS: Found device ");
                 device = d;
                 break;
             }
         }
         if (device == null) {
             message = "Sorry, could not find " + devicename;
-            Toast.makeText(context, message + devicename, Toast.LENGTH_SHORT).show();
-            textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
+            sayMessage(message);
             return;
         }
 
         if (command.equalsIgnoreCase("show")) {
-            if (device.getType().equalsIgnoreCase("lamp") ||
-                    device.getType().equalsIgnoreCase("element") ||
-                    device.getType().equalsIgnoreCase("masteralarm")) {
-                // Toast Device status
-                message = devicename + " is " + (device.getValue() == 0 ? " OFF" : " ON");
-            } else {
-                message = devicename + " is at " + device.getValue();
+            switch (device.getType()) {
+                case "lamp":
+                case "autotoggle":
+                case "element":
+                    message = devicename + " is " + (device.getValue() == 0 ? " OFF" : " ON");
+                    break;
+                case "alarm":
+                    switch (device.getValue()) {
+                        case 0:
+                            message = devicename + " is disarmed";
+                            break;
+                        case 1:
+                            message = devicename + " is armed";
+                            break;
+                        case 2:
+                            message = devicename + " is armed and triggered";
+                            break;
+                    }
+                    break;
+                case "powersensor":
+                case "thermometer":
+                    double temp = device.getValue();
+                    message = devicename + " is at " + temp / 10;
+                    break;
+                default:
+                    message = devicename + " is at " + device.getValue();
+                    break;
             }
         }
 
         if (command.equalsIgnoreCase("start")) {
-            if (device.getType().equalsIgnoreCase("lamp") ||
-                    device.getType().equalsIgnoreCase("element") ||
-                    device.getType().equalsIgnoreCase("masteralarm")) {
-                // Turn on device
-                device.setValue(1);
-            } else if (device.getType().equalsIgnoreCase("fan")) {
-                device.setValue(100);
-            } else { // Device type not changeable by voice
-                return;
+            switch (device.getType()) {
+                case "lamp":
+                case "autotoggle":
+                case "element":
+                    device.setValue(1);
+                    break;
+                case "alarm":
+                    if (device.getValue() == 2) {
+                        message = devicename + " is already armed and triggered";
+                        sayMessage(message);
+                        return;
+                    }
+                    device.setValue(1);
+                    break;
+                case "fan":
+                    device.setValue(100);
+                    break;
             }
+
             message = "Turning on " + devicename;
             ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
             Log.i(TAG, "Devicename: " + devicename);
         }
 
         if (command.equalsIgnoreCase("stop")) {
-            if (device.getType().equalsIgnoreCase("lamp") ||
-                    device.getType().equalsIgnoreCase("element") ||
-                    device.getType().equalsIgnoreCase("masteralarm") ||
-                    device.getType().equalsIgnoreCase("fan")) {
-                // Turn off device
-                device.setValue(0);
-                message = "Turning off " + devicename;
-                ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
-                Log.i(TAG, "Devicename: " + devicename);
+            switch (device.getType()) {
+                case "lamp":
+                case "alarm":
+                case "autotoggle":
+                case "element":
+                    // Turn off device
+                    device.setValue(0);
+                    message = "Turning off " + devicename;
+                    ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+                    Log.i(TAG, "Devicename: " + devicename);
+                    break;
             }
+//            if (device.getType().equalsIgnoreCase("lamp") ||
+//                    device.getType().equalsIgnoreCase("element") ||
+//                    device.getType().equalsIgnoreCase("fan") ||
+//                    device.getType().equalsIgnoreCase("autotoggle")) {
+//                // Turn off device
+//                device.setValue(0);
+//                message = "Turning off " + devicename;
+//                ((MainActivity) context).changeDevice(device, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+//                Log.i(TAG, "Devicename: " + devicename);
+//            }
         }
 
+        sayMessage(message);
+    }
+
+    private void sayMessage(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
     }

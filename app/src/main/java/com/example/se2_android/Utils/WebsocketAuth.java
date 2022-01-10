@@ -31,13 +31,9 @@ public class WebsocketAuth {
     private static final String TAG = "WebsocketAuth";
     private static WebsocketViewModel websocketViewModel;
 
-    private static final int OPCODE_STATUS_DEVICE = 10;
-    private static final int OPCODE_STATUS_ALL_DEVICES = 11;
-    private static final int OPCODE_CHANGE_DEVICE_STATUS = 20;
-    private static final int OPCODE_CHANGE_DEVICE_HOUSEHOLD = 21;
-
     private static final int OPCODE_CREATE_USER = 23;
     private static final int OPCODE_CREATE_USER_OK = 13;
+    private static final int OPCODE_CREATE_USER_NOTOK = 43;
 
     private static final int OPCODE_NEW_TOKEN = 12;
     private static final int OPCODE_REQUEST_TOKEN = 22;
@@ -159,7 +155,12 @@ public class WebsocketAuth {
                         createUserOk();
                         break;
                     case OPCODE_CREATE_HOUSEHOLD_OK:
+                        Log.i(TAG, "authHouse: onMessage - Household created: " + jsonObject);
                         createHouseholdOk(jsonObject);
+                        break;
+                    case OPCODE_CREATE_USER_NOTOK:
+                        Log.i(TAG, "authHouse: onMessage - User not created: " + jsonObject);
+                        Toast.makeText(fragmentActivity, "Username is already taken", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         Log.i(TAG, "authHouse: UKNOWN OPCODE: " + opcode);

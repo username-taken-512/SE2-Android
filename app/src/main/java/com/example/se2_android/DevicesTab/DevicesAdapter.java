@@ -28,6 +28,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     private static final int DEVICE_VIEWTYPE_FAN = 2;
     private static final int DEVICE_VIEWTYPE_THERMOMETER = 3;
     private static final int DEVICE_VIEWTYPE_POWERSENSOR = 4;
+    private static final int DEVICE_VIEWTYPE_AUTOSETTINGS = 5;
 
     private ArrayList<Device> mItemList;
     private Context mContext;
@@ -49,7 +50,19 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
     }
 
     // --- Different ViewHolder Views ---------------
+    // Autosettings ViewHolder
+    public static class ViewHolderAutosettings extends DevicesAdapter.ViewHolder {
+        public TextView mDeviceTextView;
+        public ImageView mDeviceImageView;
+        public Slider mDeviceSlider;
 
+        public ViewHolderAutosettings(View itemView) {
+            super(itemView);
+            mDeviceTextView = itemView.findViewById(R.id.deviceTextView);
+            mDeviceImageView = itemView.findViewById(R.id.deviceImageView);
+            mDeviceSlider = itemView.findViewById(R.id.deviceSlider);
+        }
+    }
 
     // Fan ViewHolder
     public static class ViewHolderFan extends DevicesAdapter.ViewHolder {
@@ -100,6 +113,10 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item_thermometer, parent, false);
                 return new ViewHolderThermometer(v);
+            case DEVICE_VIEWTYPE_AUTOSETTINGS:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.devices_rv_item_autosettings, parent, false);
+                return new ViewHolderAutosettings(v);
             default:
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.devices_rv_item, parent, false);
@@ -146,39 +163,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                     holder.mDeviceImageView.setColorFilter(Color.RED);
                     holder.mDeviceSwitch.setChecked(true);
                 }
-
-                // If all alarms are disarmed, disable switch
-//                for (Device d : mItemList) {
-//                    if (d.getType().equals("masteralarm")) {
-//                        if(d.getValue() == 1) {
-//                            Log.i("DevicesAdapter", "hmm");
-//                            holder.mDeviceSwitch.setVisibility(View.INVISIBLE);
-//                        } else {
-//                            holder.mDeviceSwitch.setVisibility(View.VISIBLE);
-//                        }
-//                    }
-//                }
                 break;
-//            case "masteralarm":
-//                    // All alarms disarmed
-//                if (currentItem.getValue() == 0) {
-//                    holder.mDeviceImageView.setColorFilter(Color.GRAY);
-//                    holder.mDeviceSwitch.setChecked(false);
-//                } else if (currentItem.getValue() == 1) {
-//                    holder.mDeviceImageView.setColorFilter(Color.GREEN);
-//                    // If all alarms are armed AND If any alarm is alarming, display red
-//                    for (Device d : mItemList) {
-//                        if (d.getType().equals("alarm")) {
-//                            if(d.getValue() == 2) {
-//                                holder.mDeviceImageView.setColorFilter(Color.RED);
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    holder.mDeviceSwitch.setChecked(true);
-//                }
-//                setSwitchListeners(holder, currentItem);
-//                break;
             case "thermometer":
                 DevicesAdapter.ViewHolderThermometer thermometerHolder = (DevicesAdapter.ViewHolderThermometer) holder;
                 thermometerHolder.mDeviceTextViewValue.findViewById(R.id.deviceTextViewValue);
@@ -191,6 +176,31 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 double power = ((double) currentItem.getValue()) / 10;
                 powerHolder.mDeviceTextViewValue.setText(String.valueOf(power +" W"));
                 break;
+            case "autosettings":
+                DevicesAdapter.ViewHolderAutosettings autosettingsHolder = (DevicesAdapter.ViewHolderAutosettings) holder;
+                autosettingsHolder.mDeviceSlider.findViewById(R.id.deviceSlider);
+                autosettingsHolder.mDeviceSlider.setLabelFormatter(value -> "" + (int) value);
+                autosettingsHolder.mDeviceTextView.setText(currentItem.getName() +
+                        " (" + (int) autosettingsHolder.mDeviceSlider.getValueFrom() +
+                        "-" + (int) autosettingsHolder.mDeviceSlider.getValueTo() + " C)");
+                if (currentItem.getValue() >= 150 && currentItem.getValue() <= 300) {
+                    autosettingsHolder.mDeviceSlider.setValue((float) currentItem.getValue() / 10);
+                }
+
+                autosettingsHolder.mDeviceSlider.addOnChangeListener(new Slider.OnChangeListener() {
+                    @Override
+                    public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                        if (currentItem.getValue() != (int) value * 10) {
+                            currentItem.setValue((int) value * 10);
+                            ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
+                        }
+
+                    }
+                });
+                break;
+            case "element":
+            case "autotoggle":
+                holder.mImageViewTimer.setVisibility(View.INVISIBLE);
             default:
                 setSwitchListeners(holder, currentItem);
                 break;
@@ -208,12 +218,19 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
 
         if ((currentItem.getType().equals("lamp"))) {
             holder.mImageViewTimer.setVisibility(View.VISIBLE);
+
+            if(currentItem.getTimer() != 0) {
+                holder.mImageViewTimer.setColorFilter(Color.GREEN);
+            } else {
+                holder.mImageViewTimer.setColorFilter(Color.GRAY);
+            }
+
             holder.mImageViewTimer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, currentItem.getName() + " will turn off after 30 min", Toast.LENGTH_SHORT).show();
                     Calendar cal = Calendar.getInstance();
                     currentItem.setTimer(cal.getTimeInMillis() + Constant.TIMER_MILLIS);
+                    Toast.makeText(mContext, currentItem.getName() + " will turn off at " + cal.getTime().toString().substring(0, 20), Toast.LENGTH_SHORT).show();
                     ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
                 }
             });
@@ -227,6 +244,10 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 if (checked) {
                     currentItem.setValue(1);
                 } else {
+                    // Timer test
+                    if(currentItem.getTimer() != 0) {
+                        currentItem.setTimer(0);
+                    }
                     currentItem.setValue(0);
                 }
                 ((MainActivity) mContext).changeDevice(currentItem, Constant.OPCODE_CHANGE_DEVICE_STATUS);
@@ -245,6 +266,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
                 return DEVICE_VIEWTYPE_THERMOMETER;
             case "powersensor":
                 return DEVICE_VIEWTYPE_POWERSENSOR;
+            case "autosettings":
+                return DEVICE_VIEWTYPE_AUTOSETTINGS;
             default:
                 return DEVICE_VIEWTYPE_DEFAULT;
         }

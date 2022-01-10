@@ -27,7 +27,7 @@ import com.example.se2_android.Utils.Constant;
 public class ConfigFragment extends Fragment {
     View view;
     Context context;
-    ImageView changeHouseImage, editDevicesImage, notificationImage, logoutImage;
+    ImageView changeHouseImage, editDevicesImage, logoutImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,7 +36,6 @@ public class ConfigFragment extends Fragment {
         context = getActivity();
         changeHouseImage = view.findViewById(R.id.changeHouse);
         editDevicesImage = view.findViewById(R.id.editDevice);
-        notificationImage = view.findViewById(R.id.notification);
         logoutImage = view.findViewById(R.id.logoutConfig);
 
 
@@ -51,13 +50,6 @@ public class ConfigFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(view).navigate(R.id.action_configFragment_to_editDeviceFragment);
-            }
-        });
-
-        notificationImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //???
             }
         });
 

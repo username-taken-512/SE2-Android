@@ -42,7 +42,6 @@ public class LoginFragment extends Fragment {
     EditText email, pWord;
     Button loginButton, forgotPasswordButton, signUpButton;
     CheckBox checkBox;
-    SwitchCompat rememberSwitch;
     private Observer<Integer> observer;
 
     User user;
@@ -62,7 +61,6 @@ public class LoginFragment extends Fragment {
         forgotPasswordButton = view.findViewById(R.id.fgtPass);
 
         checkBox = view.findViewById(R.id.checkBox);
-        rememberSwitch = view.findViewById(R.id.rememberMeSwitch);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,11 +176,6 @@ public class LoginFragment extends Fragment {
 
         if (check) {
             return;
-        }
-
-
-        if (rememberSwitch.isChecked()) {
-            //autologin
         }
 
         //Create user object
