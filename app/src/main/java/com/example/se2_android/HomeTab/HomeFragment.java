@@ -86,7 +86,11 @@ public class HomeFragment extends Fragment {
 
         //If no saved token, go to login
         if (token.equals("")) {
-            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+            Log.i(TAG, Navigation.findNavController(view).getCurrentDestination().toString());
+            if (Navigation.findNavController(view).getCurrentDestination().toString()
+                    .equals("Destination(com.example.se2_android:id/homeFragment) label=fragment_home class=com.example.se2_android.HomeTab.HomeFragment")) {
+                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+            }
         }
         Log.i(TAG, "Trying to connect with [" + token + "]");
 
@@ -103,7 +107,11 @@ public class HomeFragment extends Fragment {
                 } else if (integer == 3) {  // Token invalid. Clear token and return to login
                     Log.i(TAG, "Livedata clearing token and going login: " + integer);
                     clearToken();
-                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+                    Log.i(TAG, Navigation.findNavController(view).getCurrentDestination().toString());
+                    if (Navigation.findNavController(view).getCurrentDestination().toString()
+                            .equals("Destination(com.example.se2_android:id/homeFragment) label=fragment_home class=com.example.se2_android.HomeTab.HomeFragment")) {
+                        Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+                    }
                 }
             }
         };
@@ -154,7 +162,7 @@ public class HomeFragment extends Fragment {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-
+        Log.i(TAG, "onDestroy");
         websocketViewModel.getConnectionStatus().removeObserver(connectionObserver);
         websocketViewModel.getDeviceListVersion().removeObserver(houseObserver);
         super.onDestroy();
